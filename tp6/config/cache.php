@@ -32,7 +32,7 @@ return [
             'type'       => 'redis',
             'host'       => '127.0.0.1',
             'port'       => 6379,
-            'password'   => 'qinganweb',
+            'password'   => '',
             'select'     => 0,
             'timeout'    => 0,
             'expire'     => 0,

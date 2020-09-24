@@ -32,7 +32,7 @@ module.exports = {
   //服务和代理配置
   devServer: {
     port: port,
-    open: false,
+    open: true,
     overlay: {
       warnings: false,
       errors: true
@@ -41,7 +41,9 @@ module.exports = {
       // 解決跨域问题
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://127.0.0.1/index.php`,
+        // target: `http://127.0.0.1/index.php`,
+        target: `http://www.hardphp.com/index.php`,
+        // target: `http://local.tp6-element.com/index.php`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
