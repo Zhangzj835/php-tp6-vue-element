@@ -91,12 +91,7 @@
         <template slot-scope="scope">
           <span>{{ scope.row.phone }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="邮箱" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.email }}</span>
-        </template>
-      </el-table-column>
+      </el-table-column>      
       <el-table-column label="姓名" width="110px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.realname }}</span>

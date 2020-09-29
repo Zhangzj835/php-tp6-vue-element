@@ -195,4 +195,12 @@ class Admin extends Base
             return json_ok(['id' => strval($res)], 10006);
         }
     }
+
+    /**
+     * 测试
+     * @Route("aa", method="GET")
+     */
+    public function aa() {
+        return "aaaabcd";
+    }
 }

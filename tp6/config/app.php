@@ -10,7 +10,7 @@ return [
     'app_host'         => Env::get('app.host', ''),
     // 应用调试模式
     'app_debug'        => true,
-    'show_error_msg'   =>  true,   
+    'show_error_msg'   => true,   
     // 应用Trace
     'app_trace'        => true,
     // 应用的命名空间

@@ -40,13 +40,11 @@ module.exports = {
     proxy: {
       // 解決跨域问题
       // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        // target: `http://127.0.0.1/index.php`,
-        target: `http://www.hardphp.com/index.php`,
-        // target: `http://local.tp6-element.com/index.php`,
+      [process.env.VUE_APP_BASE_API]: {        
+        target: `http://local.api.tp6-element.com/index.php`,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          ['^' + process.env.VUE_APP_BASE_API]: '',                                                  
         }
       }
     }

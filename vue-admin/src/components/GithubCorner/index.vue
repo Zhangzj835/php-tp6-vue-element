@@ -1,5 +1,5 @@
 <template>
-  <a href="https://github.com/hardphp/tp6-vue-admin" target="_blank" class="github-corner" aria-label="View source on Github">
+  <a href="https://github.com/Zhangzj835/php-tp6-vue-element" target="_blank" class="github-corner" aria-label="View source on Github">
     <svg
       width="80"
       height="80"

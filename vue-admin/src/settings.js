@@ -43,4 +43,6 @@ module.exports = {
    */
   sidebarLogo: true,
 
+  apiUrl: 'http://local.api.tp6-element.com/index.php',
+  
 }

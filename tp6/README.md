@@ -29,6 +29,13 @@ composer create-project topthink/think tp 6.0.*-dev
 composer update topthink/framework
 ~~~
 
+
+## 部署
+1、导入mysql数据库，并配mysql连接配置 ./config/database.php
+2、拷贝根目录 .example.env 文件为 .env，并配置相应的参数（注意：此配置的优先级最高，如app_debug需在此配置）
+
+
+
 ## 文档
 
 [完全开发手册](https://www.kancloud.cn/manual/thinkphp6_0/content)
