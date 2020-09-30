@@ -70,6 +70,8 @@
 import { validUsername, validPassword } from '@/utils/validate'
 import { Loading } from 'element-ui'
 import { captcha } from '@/api/user'
+import { getEncrypt } from '@/utils/encrypt'
+import defaultSettings from '@/settings.js'
 
 let loadingInstance = Loading.service();
 
@@ -160,7 +162,8 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm)
+          let params = JSON.parse(JSON.stringify(this.loginForm))
+          this.$store.dispatch('user/login', params)
             .then(() => {
               this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               this.loading = false

@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace app\traits;
 
 use app\service\ImageHashService;
+use app\util\SystemUtil;
 use think\facade\SnowFlake;
 use think\annotation\Route;
 
@@ -31,7 +32,7 @@ trait UploadTrait
             $hash = $file->hash('sha1');
             $img  = ImageHashService::getInfoByName($hash);
             if ($img) {
-                return json_ok(['path' => $img['image']]);
+                return json_ok(['path' => SystemUtil::composeUrl($img['image'])]);
             }
 
             //上传文件
@@ -46,7 +47,7 @@ trait UploadTrait
             if (!$res) {
                 return json_error(10012);
             }
-            return json_ok(['path' => $path]);
+            return json_ok(['path' => SystemUtil::composeUrl($path)]);
         } catch (\think\exception\ValidateException $e) {
             return json_error($e->getMessage());
         }
@@ -86,7 +87,7 @@ trait UploadTrait
                         return json_error(10012);
                     }
                 }
-                $savename[] = $path;
+                $savename[] = SystemUtil::composeUrl($path);
             }
             return json_ok(['path' => $savename]);
         } catch (\think\exception\ValidateException $e) {
@@ -108,7 +109,7 @@ trait UploadTrait
             validate(['vedio' => 'fileSize:104856700|fileExt:mp4,flv,webm,ogv|fileMime:video/mp4,application/octet-stream,video/webm,video/ogg'])->check(request()->file());
             $savename = \think\facade\Filesystem::putFile('vedios', $file);
             $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
-            return json_ok(['path' => $path]);
+            return json_ok(['path' => SystemUtil::composeUrl($path)]);
         } catch (\think\exception\ValidateException $e) {
             return json_error($e->getMessage());
         }
@@ -128,7 +129,7 @@ trait UploadTrait
             validate(['file' => 'fileSize:10485670|fileExt:pdf|fileMime:application/pdf'])->check(request()->file());
             $savename = \think\facade\Filesystem::putFile('files', $file['file']);
             $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
-            return json_ok(['path' => $path]);
+            return json_ok(['path' => SystemUtil::composeUrl($path)]);
         } catch (\think\exception\ValidateException $e) {
             return json_error($e->getMessage());
         }

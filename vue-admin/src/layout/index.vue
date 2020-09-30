@@ -4,11 +4,11 @@
     <sidebar class="sidebar-container" />
     <div :class="{hasTagsView:needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
+        <navbar @handleClickSetting="handleClickSetting" />
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
-      <right-panel v-if="showSettings">
+      <right-panel ref="rightPanel" v-if="showSettings">
         <settings />
       </right-panel>
     </div>
@@ -52,6 +52,9 @@ export default {
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    handleClickSetting() {      
+      this.$refs.rightPanel.changeShow();
     }
   }
 }

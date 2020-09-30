@@ -33,7 +33,7 @@ class AdminService
         $user = self::$repository::getInfoByName($username);
         if (empty($user)) {
             throw new \app\MyException(11104);
-        }
+        }        
         //密码验证
         if ($user['password'] !== encrypt_pass($password)) {
             throw new \app\MyException(11105);

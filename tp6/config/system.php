@@ -6,7 +6,9 @@
 use think\facade\Env;
 
 return [
-
+    // 网站地址
+    'web_site' => 'http://local.api.tp6-element.com',
+    // jwt算法，键值
     'jwt_secret_key' => '88&%99@*^66*11@***###',
     // jwt算法 ，可配置的值取决于使用的jwt包支持哪些算法
     'jwt_algorithm'  => 'HS256',

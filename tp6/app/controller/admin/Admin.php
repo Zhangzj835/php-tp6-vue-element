@@ -11,6 +11,7 @@ use think\annotation\route\Middleware;
 use think\annotation\route\Group;
 use think\annotation\Route;
 use app\middleware\CheckAdmin;
+use app\util\SystemUtil;
 use app\util\TreeUtil;
 
 /**
@@ -44,19 +45,18 @@ class Admin extends Base
         $user['email']       = $this->user->email;
         $user['realname']    = $this->user->realname;
         $user['phone']       = $this->user->phone;
-        $user['img']         = $this->user->img;
+        $user['img']         = SystemUtil::composeUrl($this->user->img);
         $user['group_id']    = $this->user->group_id;
         $user['create_time'] = $this->user->create_time;
         $user['login_time']  = $this->user->login_time ? date('Y-m-d H:i:s', $this->user->login_time) : '';
         $group               = AuthGroupService::getInfoById($this->user->group_id);
         $user['group']       = $group['title'];
 
-        $rules = AuthRuleService::getAuthByGroupId($this->user->group_id);
-        // dump($rules);exit();
+        $rules = AuthRuleService::getAuthByGroupId($this->user->group_id);        
         $rules = TreeUtil::listToTreeMulti($rules, 0, 'id', 'pid', 'children');
 
         $routers = [];
-
+        
         foreach ($rules as $v) {
             $temp = $this->getdata($v);
             foreach ($v['children'] as $vo) {
@@ -197,11 +197,4 @@ class Admin extends Base
         }
     }
 
-    /**
-     * 测试
-     * @Route("aa", method="GET")
-     */
-    public function aa() {
-        return "aaaabcd";
-    }
 }

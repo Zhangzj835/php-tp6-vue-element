@@ -22,6 +22,7 @@
         </div>
         <el-dropdown-menu slot="dropdown" >
             <el-dropdown-item icon="el-icon-user-solid" command="gome">我的</el-dropdown-item>
+            <el-dropdown-item icon="el-icon-setting" command="setting">设置</el-dropdown-item>
             <el-dropdown-item divided icon="el-icon-circle-close" command="logout">退出</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -60,6 +61,8 @@ export default {
           this.$router.push(`/login?redirect=${this.$route.fullPath}`)
         }else if(command=='gome'){
           this.$router.push(`/manage/info`)
+        }else if (command=='setting') {
+          this.$emit('handleClickSetting');
         }
       }
   }
