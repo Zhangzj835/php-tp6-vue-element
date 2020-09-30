@@ -35,8 +35,8 @@ trait UploadTrait
             }
 
             //上传文件
-            $savename = \think\facade\Filesystem::putFile('images', $file);
-            $path     = config('filesystem.disks.aliyun.url') . DIRECTORY_SEPARATOR . $savename;
+            $savename = \think\facade\Filesystem::putFile('images', $file);            
+            $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
             //保存数据库
             $res = ImageHashService::save([
                 'hash'  => $hash,
@@ -75,7 +75,7 @@ trait UploadTrait
                     $path = $img['image'];
                 } else {
                     $temp = \think\facade\Filesystem::putFile('images', $file);
-                    $path = config('filesystem.disks.aliyun.url') . DIRECTORY_SEPARATOR . $savename;
+                    $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
                     //保存数据库
                     $res = ImageHashService::save([
                         'hash'  => $hash,
@@ -107,7 +107,7 @@ trait UploadTrait
         try {
             validate(['vedio' => 'fileSize:104856700|fileExt:mp4,flv,webm,ogv|fileMime:video/mp4,application/octet-stream,video/webm,video/ogg'])->check(request()->file());
             $savename = \think\facade\Filesystem::putFile('vedios', $file);
-            $path     = config('filesystem.disks.aliyun.url') . DIRECTORY_SEPARATOR . $savename;
+            $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
             return json_ok(['path' => $path]);
         } catch (\think\exception\ValidateException $e) {
             return json_error($e->getMessage());
@@ -127,7 +127,7 @@ trait UploadTrait
         try {
             validate(['file' => 'fileSize:10485670|fileExt:pdf|fileMime:application/pdf'])->check(request()->file());
             $savename = \think\facade\Filesystem::putFile('files', $file['file']);
-            $path     = config('filesystem.disks.aliyun.url') . DIRECTORY_SEPARATOR . $savename;
+            $path     = config('filesystem.disks.'.config('filesystem.default').'.url') . DIRECTORY_SEPARATOR . $savename;
             return json_ok(['path' => $path]);
         } catch (\think\exception\ValidateException $e) {
             return json_error($e->getMessage());

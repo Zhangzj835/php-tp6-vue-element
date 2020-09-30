@@ -14,7 +14,7 @@
         <el-tabs tab-position="top" style="height: 200px;">
           <el-tab-pane label="基本信息">
             <el-form-item label="上级" prop="pid">
-              <el-cascader v-model="pid" :options="getRulesList" :props="props_pid"  filterable=true placeholder="请选择" change-on-select @change="handleChange" />
+              <el-cascader v-model="pid" :options="getRulesList" :props="props_pid"  :filterable="true" placeholder="请选择" change-on-select @change="handleChange" />
             </el-form-item>
             <el-form-item label="名称" prop="title">
               <el-input v-model="temp.title" clearable />
@@ -33,6 +33,9 @@
             </el-form-item>
             <el-form-item label="跳转" prop="redirect">
               <el-input v-model="temp.redirect" clearable />
+            </el-form-item>
+            <el-form-item label="排序" prop="sorts">
+              <el-input v-model="temp.sorts" type="number" placeholder="数值越大越靠前" clearable />
             </el-form-item>
             <el-form-item label="状态">
               <el-radio-group v-model="temp.status">
@@ -96,11 +99,12 @@ export default {
         status: 1,
         icon: '',
         path: '',
-        component: 'layout',
+        component: 'layout',        
         hidden: 0,
         no_cache: 1,
         always_show: 1,
-        redirect: 'noredirect'
+        redirect: 'noredirect',
+        sorts: 10
       },
       dialogFormVisible: false,
       rules: {
@@ -108,7 +112,8 @@ export default {
         name: [{ required: true, message: '标识必填', trigger: 'blur' }],
         icon: [{ required: true, message: '图标必填', trigger: 'blur' }],
         path: [{ required: true, message: '路径必填', trigger: 'blur' }],
-        component: [{ required: true, message: '组件必填', trigger: 'blur' }]
+        component: [{ required: true, message: '组件必填', trigger: 'blur' }],
+        sorts: [{ required: true, message: '排序必填', trigger: 'blur' }]
       }
     }
   },
@@ -157,7 +162,8 @@ export default {
         hidden: 0,
         no_cache: 1,
         always_show: 1,
-        redirect: 'noredirect'
+        redirect: 'noredirect',
+        sorts: 10
       }
     },
     handleCreate() {
@@ -187,6 +193,7 @@ export default {
           _this.temp.no_cache = response.data.no_cache
           _this.temp.always_show = response.data.always_show
           _this.temp.redirect = response.data.redirect
+          _this.temp.sorts = response.data.sorts
           _this.pid = tree.getParentsId(_this.ruleList, id)
           console.log(_this.ruleList)
           console.log(_this.pid)

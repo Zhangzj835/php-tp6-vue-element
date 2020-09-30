@@ -52,6 +52,7 @@ class Admin extends Base
         $user['group']       = $group['title'];
 
         $rules = AuthRuleService::getAuthByGroupId($this->user->group_id);
+        // dump($rules);exit();
         $rules = TreeUtil::listToTreeMulti($rules, 0, 'id', 'pid', 'children');
 
         $routers = [];

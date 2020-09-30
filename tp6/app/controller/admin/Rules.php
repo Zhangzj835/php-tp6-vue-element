@@ -65,7 +65,8 @@ class Rules extends Base
             'redirect'    => input('redirect', '', 'trim'),
             'hidden'      => input('hidden', 0, 'int'),
             'no_cache'    => input('no_cache', 1, 'int'),
-            'always_show' => input('always_show', 1, 'int')
+            'always_show' => input('always_show', 1, 'int'),
+            'sorts' => input('sorts', 0, 'int'),
         ];
 
         if ($id && $id == $data['pid']) {

@@ -32,7 +32,7 @@ class AuthRuleService
         }
         //分组角色
         $ruleIds = explode(',', $group['rules']);
-        $rules   = self::$repository::getListsAll([['id', 'in', $ruleIds],['status','=',1]], ['id' => 'asc']);
+        $rules   = self::$repository::getListsAll([['id', 'in', $ruleIds],['status','=',1]], ['sorts' => 'desc', 'id' => 'asc']);
         return $rules;
     }
 

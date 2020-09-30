@@ -1,5 +1,27 @@
 <template>
   <div class="app-container">
+    <!-- 搜索 -->
+    <div v-if="showSearch" class="filter-container">
+      <el-form :inline="true" :model="listQuery" class="form-inline">
+        <el-form-item label="">
+          <el-input v-model="listQuery.name" placeholder="名称" clearable size="small" />
+        </el-form-item>
+        <el-form-item label="">
+          <el-select v-model="listQuery.status" placeholder="状态" clearable size="small">
+            <el-option label="全部" value="-1" />
+            <el-option label="正常" value="1" />
+            <el-option label="禁用" value="0" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves type="primary" icon="el-icon-search" size="small" @click="handleFilter">搜索</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-waves type="warning" icon="el-icon-refresh" size="small" @click="handleFilterClear">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+
     <!-- 操作 -->
     <el-row style="margin-bottom: 10px;">
       <el-col :xs="24" :sm="24" :lg="24">
@@ -8,6 +30,9 @@
         </el-tooltip>
         <el-tooltip content="添加" placement="top">
           <el-button v-waves type="success" icon="el-icon-plus" circle @click="handleCreate" />
+        </el-tooltip>
+        <el-tooltip content="搜索" placement="top">
+          <el-button v-waves type="primary" icon="el-icon-search" circle @click="showSearch = !showSearch" />
         </el-tooltip>
         <el-tooltip content="删除" placement="top">
           <el-button v-waves :loading="deleting" :disabled="buttonDisabled" type="danger" icon="el-icon-delete" circle @click="handleDeleteAll()" />
@@ -27,45 +52,33 @@
     </el-row>
 
     <!-- 表格 -->
-    <tree-table
+    <el-table
       :key="tableKey"
       v-loading="listLoading"
-      :data="getRulesList"
-      :expand-all="expandAll"
-      :columns="columns"
+      :data="list"
       border
       fit
       highlight-current-row
       style="width: 100%;"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="标识" width="150px" align="center">
+      <el-table-column type="selection" width="55" />
+      <el-table-column label="ID" align="center" width="200" fixed>
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="图标" width="120px" align="center">
+      <el-table-column label="名称" min-width="100px" fixed>
         <template slot-scope="scope">
-          <span>{{ scope.row.icon }}</span>
+          <span class="link-type" @click="handleUpdate(scope.$index,scope.row.id)">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="路径" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.path }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="组件" width="150px" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.component }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" width="80px" align="center">
+      <el-table-column label="状态" width="110px" align="center">
         <template slot-scope="scope">
           <span :class="{'el-icon-success text-green':scope.row.status == 1,'el-icon-error text-red':scope.row.status == 0}" @click="handleModifyStatus(scope.$index,scope.row.id,scope.row.status)">{{ scope.row.status | statusFilter }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column label="操作" align="center" width="120px" class-name="small-padding">
+      <el-table-column label="操作" align="center" width="120px" class-name="small-padding fixed-width" fixed="right">
         <template slot-scope="scope">
           <el-tooltip content="编辑" placement="top">
             <el-button v-waves type="primary" icon="el-icon-edit-outline" circle @click="handleUpdate(scope.$index,scope.row.id)" />
@@ -75,25 +88,29 @@
           </el-tooltip>
         </template>
       </el-table-column>
-    </tree-table>
+    </el-table>
+
+    <!-- 分页 -->
+    <div class="pagination-container">
+      <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.psize" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+    </div>
 
     <!-- 表单 -->
-    <detailForm ref="fromDetail" :rule-list="list" @updateRow="updateRow" />
+    <cdetailForm ref="fromDetail" @updateRow="updateRow" />
 
   </div>
 </template>
 
 <script>
-import { getList, del, change, delAll, changeAll } from '@/api/rules'
-import waves from '@/directive/waves' // 水波纹指令
+import { getList, del, change, delAll, changeAll } from '@/api/column'
+import waves from '@/directive/waves'
+// eslint-disable-next-line no-unused-vars
 import { getArrByKey } from '@/utils'
-import tree from '@/utils/tree'
-import detailForm from './rules/form'
-import treeTable from '@/components/TreeTable'
+import cdetailForm from './column/form'
 
 export default {
-  name: 'Rules',
-  components: { detailForm, treeTable },
+  name: 'Column',
+  components: { cdetailForm },
   directives: {
     waves
   },
@@ -110,30 +127,21 @@ export default {
     return {
       tableKey: 0,
       list: null,
+      total: null,
       selectedRows: null,
       listLoading: true,
-      expandAll: true,
-      columns: [
-        {
-          text: '名称',
-          value: 'title'
-        }
-      ],
+      showSearch: false,
       listQuery: {
-        order: {'sorts':'desc', 'id':'asc'},
+        page: 1,
+        psize: 10,
         status: '-1',
-        title: ''
+        name: '',
+        order: {'sorts': 'desc', 'id': 'asc'}
       },
       buttonDisabled: true,
-      deleting: false
+      deleting: false,
+      currentIndex: -1
     }
-  },
-  computed: {
-    getRulesList() {
-      return tree.listToTreeMulti(this.list, 0, 'id', 'pid', 'children', { 'delete': false })
-    }
-  },
-  watch: {
   },
   created() {
     this.fetchList()
@@ -143,15 +151,32 @@ export default {
       this.listLoading = true
       getList(this.listQuery).then(response => {
         this.list = response.data.data
+        this.total = response.data.total
         this.listLoading = false
       })
     },
-    handleFilterClear() {
-      this.listQuery = {
-        status: '-1',
-        title: ''
-      }
+    handleFilter() {
+      this.listQuery.page = 1
       this.fetchList()
+    },
+    handleFilterClear() {
+      this.listQuery.page = 1;
+      this.listQuery.status = '-1';
+      this.listQuery.name = '';
+      this.fetchList()
+    },
+    handleSizeChange(val) {
+      this.listQuery.psize = val
+      this.fetchList()
+    },
+    handleCurrentChange(val) {
+      this.listQuery.page = val
+      this.fetchList()
+    },
+    handleModifyStatus(index, id, status) {
+      this.list[index]['status'] = 1 - status
+      // eslint-disable-next-line no-unused-vars
+      change(id, 'status', 1 - status).then(response => {})
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
@@ -165,15 +190,20 @@ export default {
       this.$refs.fromDetail.handleCreate()
     },
     handleUpdate(index, id) {
+      this.currentIndex = index
       this.$refs.fromDetail.handleUpdate(id)
     },
-    handleModifyStatus(index, id, status) {
-      const statusObj = { 'status': 1 - status }
-      this.list = tree.upadteArr(this.list, 'id', id, statusObj)
-      change(id, 'status', 1 - status).then(response => {})
-    },
     updateRow(temp) {
-      this.fetchList()
+      if (this.currentIndex >= 0 && temp.id > 0) {
+        this.list.splice(this.currentIndex, 1, temp)
+      } else {
+        if (this.list.length >= 10) {
+          this.list.pop()
+        }
+        this.list.unshift(temp)
+        this.total = this.total + 1
+      }
+      this.currentIndex = -1
     },
     handleDelete(index, id) {
       const _this = this
@@ -182,21 +212,19 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const delObj = { 'delete': true }
-        _this.list = tree.upadteArr(_this.list, 'id', id, delObj)
+        _this.$set(_this.list[index], 'delete', true)
         del(id).then(response => {
           if (response.status === 1) {
+            _this.list.splice(index, 1)
+            _this.total = _this.total - 1
             _this.$notify.success(response.msg)
-            _this.fetchList()
           } else {
             _this.$notify.error(response.msg)
           }
-          const delObj = { 'delete': false }
-          _this.list = tree.upadteArr(_this.list, 'id', id, delObj)
-        // eslint-disable-next-line handle-callback-err
+          _this.$set(_this.list[index], 'delete', false)
+        // eslint-disable-next-line no-unused-vars
         }).catch((error) => {
-          const delObj = { 'delete': false }
-          _this.list = tree.upadteArr(_this.list, 'id', id, delObj)
+          _this.$set(_this.list[index], 'delete', false)
         })
       }).catch(() => {
         this.$message({
@@ -218,13 +246,23 @@ export default {
           const idstr = ids.join(',')
           delAll({ ids: idstr }).then(response => {
             if (response.status === 1) {
+              const delindex = []
+              // eslint-disable-next-line no-unused-vars
+              _this.list.forEach(function(item, index, input) {
+                if (ids.indexOf(item.id) > -1) {
+                  delindex.push(index)
+                }
+              })
+              for (let i = delindex.length - 1; i >= 0; i--) {
+                _this.list.splice(delindex[i], 1)
+              }
+              _this.total = _this.total - delindex.length
               _this.$message.success(response.msg)
-              _this.fetchList()
             } else {
               _this.$message.error(response.msg)
             }
             _this.deleting = false
-          // eslint-disable-next-line handle-callback-err
+          // eslint-disable-next-line no-unused-vars
           }).catch((error) => {
             _this.deleting = false
           })
@@ -245,12 +283,17 @@ export default {
         const idstr = ids.join(',')
         changeAll({ val: idstr, field: 'status', value: command }).then(response => {
           if (response.status === 1) {
+            // eslint-disable-next-line no-unused-vars
+            _this.list.forEach(function(item, index, input) {
+              if (ids.indexOf(item.id) > -1) {
+                _this.list[index]['status'] = command
+              }
+            })
             _this.$message.success(response.msg)
-            _this.fetchList()
           } else {
             _this.$message.error(response.msg)
           }
-        // eslint-disable-next-line handle-callback-err
+        // eslint-disable-next-line no-unused-vars
         }).catch((error) => {
         })
       } else {

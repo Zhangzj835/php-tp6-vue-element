@@ -26,7 +26,8 @@ class Test
      * 方法测试
      * @Route("test", method="GET")
      */
-    public function test() {
+    public function test():string {  
+        echo config('filesystem.default');      
         return "this is test!";
     }
 }
