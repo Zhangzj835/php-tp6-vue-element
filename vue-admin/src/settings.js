@@ -1,10 +1,10 @@
 module.exports = {
 
   // 应用appid
-  appid: 'ty9fd2848a039ab554',
+  appid: 'cy930202',
 
   // 应用秘钥
-  appSecret: 'ec32286d0718118861afdbf6e401ee81',
+  appSecret: 'YR40gZVTz1BCPGhAsCCOwR9Q59Kq14Bf',
 
   // token在Cookie中存储的天数，默认1天
   cookieExpires: 1,
@@ -43,6 +43,7 @@ module.exports = {
    */
   sidebarLogo: true,
 
+  webSite: 'http://local.api.tp6-element.com',
   apiUrl: 'http://local.api.tp6-element.com/index.php',
   
 }

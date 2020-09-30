@@ -33,6 +33,10 @@ composer update topthink/framework
 ## 部署
 1、导入mysql数据库，并配mysql连接配置 ./config/database.php
 2、拷贝根目录 .example.env 文件为 .env，并配置相应的参数（注意：此配置的优先级最高，如app_debug需在此配置）
+3、修改应用id和密钥
+    a.更换mysql.tp_app 中appid 和 app_salt
+    b.更换前端代码配置 ./src/setting.js appid 和 appSecret
+    注意：修改密钥之后，账号密码需重新生成
 
 
 

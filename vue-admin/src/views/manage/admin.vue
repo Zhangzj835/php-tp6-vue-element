@@ -154,6 +154,7 @@
 import { getList, del, change, delAll, changeAll } from '@/api/user'
 import waves from '@/directive/waves'
 import { parseTime, pickerOptions, getArrByKey } from '@/utils'
+import { composeUrl } from '@/utils/system'
 import detailForm from './admin/form'
 import openWindow from '@/utils/open-window'
 
@@ -215,6 +216,9 @@ export default {
       getList(this.listQuery).then(response => {
         this.list = response.data.data
         this.total = response.data.total
+        this.list.map(item=>{
+          item.img = composeUrl(item.img);
+        })
         this.listLoading = false
       })
     },
