@@ -208,8 +208,7 @@ export default {
     }    
   },
   created() {
-    this.fetchList()
-    this.defaultImage = defaultSettings.defaultImage
+    this.fetchList()    
   },
   methods: {
     fetchList() {
@@ -251,7 +250,7 @@ export default {
     },
     handleModifyStatus(index, id, is_enabled) {
       this.list[index]['is_enabled'] = 1 - is_enabled
-      change(id, 'is_enabled', 1 - is_enabled).then(response => {})
+      change(id, 'is_enabled', 1 - is_enabled)
     },
     handleSelectionChange(val) {
       if (val.length > 0) {
@@ -301,7 +300,7 @@ export default {
           }
           _this.$set(_this.list[index], 'delete', false)
         // eslint-disable-next-line handle-callback-err
-        }).catch((error) => {
+        }).catch(() => {
           _this.$set(_this.list[index], 'delete', false)
         })
       }).catch(() => {
@@ -325,7 +324,7 @@ export default {
           delAll({ ids: idstr }).then(response => {
             if (response.status === 1) {
               const delindex = []
-              _this.list.forEach(function(item, index, input) {
+              _this.list.forEach(function(item, index) {
                 if (ids.indexOf(item.id) > -1) {
                   delindex.push(index)
                 }
@@ -340,7 +339,7 @@ export default {
             }
             _this.deleting = false
           // eslint-disable-next-line handle-callback-err
-          }).catch((error) => {
+          }).catch(() => {
             _this.deleting = false
           })
         }).catch(() => {
@@ -360,7 +359,7 @@ export default {
         const idstr = ids.join(',')
         changeAll({ val: idstr, field: 'is_enabled', value: command }).then(response => {
           if (response.status === 1) {
-            _this.list.forEach(function(item, index, input) {
+            _this.list.forEach(function(item, index) {
               if (ids.indexOf(item.id) > -1) {
                 _this.list[index]['is_enabled'] = command
               }
