@@ -198,17 +198,18 @@ export default {
       deleting: false,
       dateTime: '',
       pickerOptions: pickerOptions,
-      currentIndex: -1
+      currentIndex: -1,
     }
   },
   watch: {
     dateTime: function(val) {
       this.listQuery.start_time = val[0]
       this.listQuery.end_time = val[1]
-    }
+    }    
   },
   created() {
     this.fetchList()
+    this.defaultImage = defaultSettings.defaultImage
   },
   methods: {
     fetchList() {

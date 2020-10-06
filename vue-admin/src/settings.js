@@ -43,6 +43,7 @@ module.exports = {
    */
   sidebarLogo: true,
 
+  defaultImage: '@/assets/images/default-img.jpg',
   webSite: 'http://local.api.tp6-element.com',
   apiUrl: 'http://local.api.tp6-element.com/index.php',
   

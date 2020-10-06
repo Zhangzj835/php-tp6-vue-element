@@ -1,9 +1,10 @@
+import defaultSettings from '@/settings.js'
 
-export function composeUrl(url) {
-    let web_site = this.$store.state.settings.webSite;
+export function composeUrl(url) {    
+    let web_site = defaultSettings.webSite;
     let temp = url.substr(0, 4);
-    if (temp != 'http') {
-        url = web_site.url;
+    if (temp != 'http' && url) {
+        url = web_site+url;
     }        
     return url;
 }

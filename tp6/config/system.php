@@ -49,4 +49,7 @@ return [
         //模板
         'con'  => '【咖盟】您的验证码为：@，有效时间10分钟'
     ],
+
+    'default_img' => '/static/images/default-img.jpg',
+
 ];

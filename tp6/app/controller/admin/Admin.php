@@ -131,6 +131,15 @@ class Admin extends Base
         return [$where, []];
     }
 
+    //查询条件后置处理
+    public function afterIndex($data)
+    {
+        foreach ($data as $v) {
+            $v['img'] = SystemUtil::composeUrl($v['img']);
+        }
+        return $data;
+
+    }
 
     //保存前置处理
     public function beforeSave($id)
