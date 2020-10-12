@@ -23,7 +23,9 @@ const actions = {
           item.children.map(function(child) {
             //二级菜单下如果无子菜单，数据库组件字段值=view下文件夹名称+'/'+vue文件名称，如果有三级菜单，二级菜单组件默认layout，数据库中组件字段无需配置
             const child_component = child.component
-            if(child_component){
+            if (child_component == 'AppMain') { 
+              child.component = (resolve) => require(['./../../layout/components/AppMain'], resolve)
+            }else if(child_component){
               child.component = (resolve) => require([`./../../views/${child_component}`], resolve)
             }else{
               child.component = (resolve) => require(['./../../layout'], resolve)
