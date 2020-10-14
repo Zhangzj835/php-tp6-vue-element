@@ -53,13 +53,19 @@
           name="code"
           tabindex="3"
           autocomplete="ff"
+          @keyup.enter.native="handleLogin"
         />
         <span class="code-img" >
           <img @click="updatecode" :src="img"/>
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button 
+        :loading="loading" 
+        type="primary" 
+        style="width:100%;margin-bottom:30px;" 
+        @click.native.prevent="handleLogin">登录
+      </el-button>
 
     </el-form>
 

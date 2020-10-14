@@ -30,7 +30,7 @@ return [
         'redis' => [
             // 驱动方式
             'type'       => 'redis',
-            'host'       => '192.168.1.30',
+            'host'       => '127.0.0.1',
             'port'       => 6379,
             'password'   => '',
             'select'     => 0,
