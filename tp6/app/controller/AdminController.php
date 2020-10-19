@@ -18,9 +18,9 @@ class AdminController extends BaseController
     // 初始化
     protected function initialize()
     {
-        $this->user = $this->request->sys_user;
+        $this->user = $this->request->sys_user;        
         //权限验证,1=超级管理员，放行 TODO
-        if ($this->user->group_id !== 1) {
+        if (!$this->user ||$this->user->group_id !== 1) {
 
         }
     }

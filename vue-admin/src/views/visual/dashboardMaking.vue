@@ -16,7 +16,7 @@
               <el-radio :label="'preview'">预览</el-radio>
             </el-radio-group>
             <el-button type="primary" @click="saveSubmit">保存</el-button>
-            <el-button size="mini" v-if="!publishStatus&&menu_id" @click="statusChange()">重新发布</el-button>
+            <el-button size="mini" v-if="!publishStatus&&identification" @click="statusChange()">重新发布</el-button>
           </el-row>
         </div>
       </div>
@@ -199,7 +199,7 @@ export default {
       pageInfo: null, //页面信息
       userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息
       pageName: "", //报表名称
-      menu_id: 0, //页面ID，编辑的时候用
+      identification: "", //页面ID，编辑的时候用
       editPreviewShow: "edit", //切换编辑模式or预览模式
       dateValue: [],
       focusItem: null,
@@ -343,25 +343,23 @@ export default {
       if (localStorage.getItem("is_reload_page") == 1) {
         localStorage.setItem("is_reload_page", 0);
         window.location.reload();
-        // window.location.href=window.location.href;
-        // window.location=window.location
       }
 
       let dateTime = await getRadioDate("昨日");
       this.form.dateTime = [dateTime[0], dateTime[1]];
 
       let query = this.$route.query;
-      this.menu_id = query.menu_id ? query.menu_id : 0;
+      let params = this.$route.path.split('/');      
+      this.identification = params[3] ? params[3] : "";
       this.publishStatus = query.status ? query.status : null;
-      if (this.menu_id) {
-        //menu_id不为0，就是编辑仪表板
+      if (this.identification) {        
         this.getPageInfo();
       }
     },
     statusChange() {
       try {
         setDashBoardStatus({
-          id: this.menu_id,
+          identification: this.identification,
           status: 1,
         }).then((res) => {
           this.$message({
@@ -372,10 +370,10 @@ export default {
       } catch (error) {}
     },
     getPageInfo() {
-      let menu_id = this.menu_id;
+      let identification = this.identification;
       try {
         getPageInfo({
-          menu_id,
+          identification,
         }).then((res) => {
           this.pageName = res.data.pageInfo[0].page_name;
           this.pageInfo = res.data.pageInfo[0];
@@ -386,7 +384,7 @@ export default {
             let layout_info = JSON.parse(item.layout_info);
             let query_input = JSON.parse(item.query_input);
             dashboardLayout.push({
-              dashboardId: menu_id,
+              dashboardId: identification,
               dataFromId: item.component_model,
               h: layout_info.h,
               i: item.id,
@@ -730,7 +728,7 @@ export default {
       console.log("this.dashboardLayout", this.dashboardLayout);
       let dashboardLayout = this.dashboardLayout;
       let query = this.$route.query;
-      let menu_id = this.menu_id ? this.menu_id : 0; //有menu_id就是编辑，否则就是新增仪表板
+      let identification = this.identification ? this.identification : ""; //有identification就是编辑，否则就是新增仪表板
       let arrs = [];
       let components = [];
       if (this.pageName == "") {
@@ -759,7 +757,7 @@ export default {
 
         components.push({
           id: item.i,
-          report_page_id: menu_id,
+          report_page_id: identification,
           component_type: item.type,
           component_model: item.dataFromId,
           layout_info: JSON.stringify({
@@ -775,7 +773,7 @@ export default {
         });
       });
       let body = {
-        id: menu_id,
+        id: identification,
         parent_id: query.parent_id,
         page_name: this.pageName,
         user_name: this.userInfo.name,
@@ -789,7 +787,7 @@ export default {
         saveDashboardMaking(body).then((res) => {
           if (res.code == 200) {
             if (res.data.page_id) {
-              this.menu_id = res.data.page_id;
+              this.identification = res.data.identification;
             }
             let that = this;
             this.$message({
@@ -797,15 +795,11 @@ export default {
               message: "保存成功",
               type: "success",
               async onClose() {
-                if (!menu_id) {
+                if (!identification) {
                   // window.location.reload();
                   localStorage.setItem("is_reload_page", 1);
                   that.$router.push(
-                    "/dashboardManager/dashboardMaking?parent_id=" +
-                      query.parent_id +
-                      "&menu_id=" +
-                      res.data.page_id +
-                      "&status=true"
+                    "/visual/dashboardMaking/"+res.data.identification
                   );
                   that.init();
                 }

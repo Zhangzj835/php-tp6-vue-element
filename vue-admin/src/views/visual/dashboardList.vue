@@ -242,7 +242,7 @@ export default {
             parent_id: this.pageId,
           });
       this.$router.push({
-        path: "/dashboardManager/dashboardMaking",
+        path: "/virsual/dashboardMaking",
         query: params,
       });
     },
