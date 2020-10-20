@@ -7,7 +7,7 @@ import { webSite } from '@/settings'
 //获取当前用户的报表的页面结构
 export function dashManagerMenuTree(params) {
     return request({
-        url: '/admin/visual/dashManager/menuTree',
+        url: '/admin/visual/menuTree',
         method: 'get',
         params
     })
@@ -15,7 +15,7 @@ export function dashManagerMenuTree(params) {
 //获取数据模型列表
 export function getDataModels(params) {
     return request({
-        url: '/admin/visual/dashManager/getDataModels',
+        url: '/admin/visual/getDataModels',
         method: 'get',
         params
     })
@@ -23,7 +23,7 @@ export function getDataModels(params) {
 //获取数据源列表
 export function getDataSources(params) {
     return request({
-        url: '/admin/visual/dashManager/getDataSources',
+        url: '/admin/visual/getDataSources',
         method: 'get',
         params
     })
@@ -31,7 +31,7 @@ export function getDataSources(params) {
 //获取数据模型维度和指标表
 export function getDataModelColumn(params) {
     return request({
-        url: '/admin/visual/dashManager/getDataModelColumn',
+        url: '/admin/visual/getDataModelColumn',
         method: 'get',
         params
     })
@@ -39,7 +39,7 @@ export function getDataModelColumn(params) {
 //获取组件数据
 export function getComResultData(params) {
     return request({
-        url: '/admin/visual/dashManager/getComResultData',
+        url: '/admin/visual/getComResultData',
         method: 'post',
         data:params
     })
@@ -47,7 +47,7 @@ export function getComResultData(params) {
 //新建文件夹接口
 export function createFolderMenu(params) {
     return request({
-        url: '/admin/visual/dashManager/createMenu',
+        url: '/admin/visual/createMenu',
         method: 'post',
         params
     })
@@ -55,7 +55,7 @@ export function createFolderMenu(params) {
 //获取指定文件夹下面的子菜单
 export function getMenuChildren(params) {
     return request({
-        url: '/admin/visual/dashManager/getMenuChildren',
+        url: '/admin/visual/getMenuChildren',
         method: 'get',
         params
     })
@@ -63,7 +63,7 @@ export function getMenuChildren(params) {
 //修改发布状态
 export function setDashBoardStatus(params) {
     return request({
-        url: '/admin/visual/dashManager/setDashBoardStatus',
+        url: '/admin/visual/setDashBoardStatus',
         method: 'post',
         params
     })
@@ -72,7 +72,7 @@ export function setDashBoardStatus(params) {
 //保存仪表板制作 
 export function saveDashboardMaking(params) {
     return request({
-        url: '/admin/visual/dashManager/saveDashboardMaking',
+        url: '/admin/visual/saveDashboardMaking',
         method: 'post',
         data:params
     })
@@ -81,7 +81,7 @@ export function saveDashboardMaking(params) {
 //获取页面的所有组件 
 export function getMenuComponents(params) {
     return request({
-        url: '/admin/visual/dashManager/getMenuComponents',
+        url: '/admin/visual/getMenuComponents',
         method: 'get',
         params
     })
@@ -90,7 +90,7 @@ export function getMenuComponents(params) {
 //删除仪表板
 export function delDashboard(params) {
     return request({
-        url: '/admin/visual/dashManager/delDashboard',
+        url: '/admin/visual/delDashboard',
         method: 'post',
         data:params
     })
@@ -108,7 +108,7 @@ export function getPageInfo(params) {
 //获取维度关联表字段
 export function getDimRelation(params) {
     return request({
-        url: '/admin/visual/dashManager/getDimRelation',
+        url: '/admin/visual/getDimRelation',
         method: 'get',
         params
     })
@@ -116,7 +116,7 @@ export function getDimRelation(params) {
 //下载组件数据
 export function downloadComponentData(params) {
     return request({
-        url: '/admin/visual/dashManager/downloadComponentData',
+        url: '/admin/visual/downloadComponentData',
         method: 'post',
         data:params,
         responseType: 'blob'
@@ -126,7 +126,7 @@ export function downloadComponentData(params) {
 //修改文件夹名称
 export function updateFolderName(params) {
     return request({
-        url: '/admin/visual/dashManager/updateFolderName',
+        url: '/admin/visual/updateFolderName',
         method: 'post',
         data:params
     })
@@ -136,7 +136,7 @@ export function updateFolderName(params) {
 //删除文件夹
 export function deleteFolder(params) {
     return request({
-        url: '/admin/visual/dashManager/deleteFolder',
+        url: '/admin/visual/deleteFolder',
         method: 'post',
         data:params
     })
@@ -145,7 +145,7 @@ export function deleteFolder(params) {
 //修改报表所属文件夹
 export function updatePageToFolder(params) {
     return request({
-        url: '/admin/visual/dashManager/updatePageToFolder',
+        url: '/admin/visual/updatePageToFolder',
         method: 'post',
         data:params
     })

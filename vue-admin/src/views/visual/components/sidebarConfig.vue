@@ -708,8 +708,10 @@ export default {
     getDataModels() {
       try {
         getDataModels().then((res) => {
-          this.dataModels = res.data;
-          this.configInit();
+          if (res.code == 10000) {
+            this.dataModels = res.data.list;
+            this.configInit();
+          }
         });
       } catch (error) {}
     },
@@ -720,7 +722,7 @@ export default {
     getDataSources() {
         try {
         getDataSources().then((res) => {
-          if (res.code == 200) {
+          if (res.code == 10000) {
             this.dataSourceArr = res.data.list;            
           }
         });

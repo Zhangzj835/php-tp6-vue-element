@@ -1,21 +1,14 @@
 <template>
   <div class="container container-editDashboard">
     <div class="simple-header-container">
-      <div class="df-acenter">
-        <div>
-          <el-form label-width="80px">
-            <el-form-item label="报表名称">
-              <el-input v-model="pageName" maxlength="10"></el-input>
-            </el-form-item>
-          </el-form>
-        </div>
+      <div class="df-acenter">        
         <div class="header-btn">
           <el-row>
             <el-radio-group v-model="editPreviewShow" @change="selectRadio">
               <el-radio :label="'edit'">编辑</el-radio>
               <el-radio :label="'preview'">预览</el-radio>
             </el-radio-group>
-            <el-button type="primary" @click="saveSubmit">保存</el-button>
+            <el-button class="save-button" type="primary" @click="saveSubmit">保存</el-button>
             <el-button size="mini" v-if="!publishStatus&&identification" @click="statusChange()">重新发布</el-button>
           </el-row>
         </div>
@@ -196,9 +189,8 @@ export default {
   data() {
     return {
       publishStatus: null, //发布状态
-      pageInfo: null, //页面信息
-      userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息
-      pageName: "", //报表名称
+      pageInfo: {}, //页面信息
+      userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息      
       identification: "", //页面ID，编辑的时候用
       editPreviewShow: "edit", //切换编辑模式or预览模式
       dateValue: [],
@@ -374,9 +366,8 @@ export default {
       try {
         getPageInfo({
           identification,
-        }).then((res) => {
-          this.pageName = res.data.pageInfo[0].page_name;
-          this.pageInfo = res.data.pageInfo[0];
+        }).then((res) => {          
+          this.pageInfo = res.data.pageInfo;
           let dashboardLayout = [];
           let data = res.data.components;
 
@@ -731,12 +722,7 @@ export default {
       let identification = this.identification ? this.identification : ""; //有identification就是编辑，否则就是新增仪表板
       let arrs = [];
       let components = [];
-      if (this.pageName == "") {
-        return this.$message({
-          message: "请输入报表名称",
-          type: "warning",
-        });
-      } else if (!dashboardLayout.length) {
+      if (!dashboardLayout.length) {
         return this.$message({
           message: "请添加组件",
           type: "warning",
@@ -774,8 +760,7 @@ export default {
       });
       let body = {
         id: identification,
-        parent_id: query.parent_id,
-        page_name: this.pageName,
+        parent_id: query.parent_id,        
         user_name: this.userInfo.name,
         status: 1,
         components: components,
@@ -950,10 +935,14 @@ export default {
     overflow: hidden;
   }
 }
+.save-button{
+  margin-left: 10px;
+}
 </style>
 <style scoped>
 .svg-icon{
   width: 2em;
   height: 2em;
 }
+@import './styles/visual.scss';
 </style>

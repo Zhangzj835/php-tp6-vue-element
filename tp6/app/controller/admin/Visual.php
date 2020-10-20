@@ -9,7 +9,11 @@ use think\annotation\route\Middleware;
 use think\annotation\route\Group;
 use think\annotation\Route;
 use app\middleware\CheckAdmin;
-
+use app\model\VisualDataModel;
+use app\model\VisualDataModelColumn;
+use app\model\VisualDataSource;
+use app\model\VisualReportPage;
+use app\model\VisualReportPageComponents;
 
 /**
  * 报表管理
@@ -20,39 +24,57 @@ use app\middleware\CheckAdmin;
  */
 class Visual extends Base
 {
-    //服务，带命名空间
-    public static $service = 'app\service\VisualService';    
-    //状态变更允许字段,格式 字段名：允许值
-    public static $enableField = ['status' => [0, 1]];
-
-    use ControllerTrait;
-
-
-    //查询条件前置处理
-    public function beforeIndex()
-    {
-        //搜索参数
-        $identification      = input('identification', '', 'trim');
-        $where = true;        
-        if ($identification != '') {
-            $where .= " and identification = " . $identification;
-        }
-        return [$where, []];
-    }
-
     /**
      * 获取页面信息
      * @Route("getPageInfo", method="GET")
      */
     public function getPageInfo() {
         $identification = input('identification');
-
+        $pageInfo = VisualReportPage::where('identification', $identification)->find()->toArray();
+        if ($pageInfo) {
+            $components = VisualReportPageComponents::where('report_page_id', $pageInfo['id'])->select()->toArray();            
+        }        
         $data = [
-            "components" => [],
-            "pageInfo" => 0
+            'components' => $components ? :[],
+            'pageInfo' => $pageInfo ? :[]
+        ];        
+        return json_ok($data);
+    }
+
+    /**
+     * 获取所有模型
+     * @route("getDataModels", method="get")
+     */
+    public function getDataModels() {
+        $models = VisualDataModel::where(1)->select()->toArray();
+        $data = [
+            'list'=>$models
         ];
         return json_ok($data);
     }
 
-    
+    /**
+     * 获取模型字段
+     * @route("getDataModelColumn", method="get")
+     */
+    public function getDataModelColumn() {
+        $modelId = input('model_id');
+        $columns = VisualDataModelColumn::where('model_id', $modelId)->select()->toArray();
+        $data = [
+            'list'=>$columns
+        ];
+        return json_ok($data);
+    }
+
+    /**
+     * 获取数据源列表
+     * @route("getDataSources", method="get")
+     */
+    public function getDataSources() {
+        $sources = VisualDataSource::where(1)->select()->toArray();
+        $data = [
+            'list'=>$sources
+        ];
+        return json_ok($data);
+    }
 }
