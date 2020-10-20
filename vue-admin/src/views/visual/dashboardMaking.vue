@@ -890,6 +890,8 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+// @import './styles/visual.scss';
+
 .container {
   background: #fff;
   padding: 0;
@@ -944,5 +946,5 @@ export default {
   width: 2em;
   height: 2em;
 }
-@import './styles/visual.scss';
+
 </style>

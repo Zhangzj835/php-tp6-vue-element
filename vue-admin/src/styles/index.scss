@@ -190,3 +190,65 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
+
+/*----------------------------------------------------------------*/
+
+//栅格拖动布局
+.vue-grid-item{
+  background: #fff;
+  &:hover{
+    box-shadow: 0 6px 10px 0 #d8d7dc;
+  }
+  &:active{
+    border: 1px solid #3a8ee6;
+  }
+  &:focus{
+    border: 1px solid #3a8ee6!important;
+  }
+}
+//仪表板制作页面
+
+.container-editDashboard{
+  .no-drag{
+    .wrap {
+      height: calc(100% - 67px)!important;
+    }
+  }
+  .mce-menubar{
+    display: none;
+  }
+  
+  .content{
+    padding:0!important;
+    .no-drag{
+      padding:20px;
+    }
+  }
+  .vue-grid-layout{
+    min-height: calc(100vh - 200px)!important;
+  }
+  .el-card__body{
+    height: calc(100vh - 200px);
+    overflow-x: auto;
+    padding: 0;
+  }
+  .el-radio-group{
+    margin-right: 25px;
+  }
+  .el-card__header{
+    padding: 5px 20px;
+  }
+}
+.container-dashboardView{
+  .el-card__body{
+    padding:0;
+  }
+}
+.container-dashboardView,.container-editDashboard{
+  .index-wrap{
+    .el-card__body{
+      height: 120px;
+      padding: 20px;
+    }
+  }
+}

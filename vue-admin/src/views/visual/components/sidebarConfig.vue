@@ -646,7 +646,7 @@ export default {
           model_id,
         }).then((res) => {
           this.modelColumnLoading = false;
-          let data = res.data;
+          let data = res.data.list;
           this.dataModelsColumn = data;
           let measure = [];
           let dimension = [];
