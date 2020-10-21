@@ -1,32 +1,32 @@
 <template>
-  <div class="wrap" :style="type=='tab'?'overflow-y: auto;':type=='filter'?'height:100%;':'height: calc(100% - 30px);'" >
+  <div ref="componentItem" class="wrap" :style="type=='tab'?'overflow-y: auto;':type=='filter'?'height:100%;':'height: calc(100% - 30px);'" >
     <!-- 组件内查询条件 -->
-    <el-form    
-      v-if="getDataWay == 'sql'"     
-      :inline="true" 
-      class="form-search" 
-      ref="form" 
-      v-model="searchItems">    
-      <span v-for="(item, index) in searchItems" :key="index">    
-      <el-form-item v-if="item.show != 'false'" :label="item.label">
-        <el-select 
-          v-if="item.inputType == 'select'"
-          v-model="item.value"
-          clearable 
-          :placeholder="item.placeholder">
-          <el-option v-for="(v, i) in item.inputOptions" :key="i" :label="v" :value="v"></el-option>
-        </el-select>
-        <el-input                       
-          v-else
-          v-model="item.value" 
-          label-width='80px' 
-          :placeholder="item.placeholder"
-          @input="onInput()" >
-        </el-input>
-      </el-form-item>
-      </span>
-    </el-form>
-    
+    <div ref="searchForm" >
+      <el-form    
+        v-if="getDataWay == 'sql'"     
+        :inline="true" 
+        class="form-search"         
+        v-model="searchItems">    
+        <span v-for="(item, index) in searchItems" :key="index">    
+        <el-form-item v-if="item.show != 'false'" :label="item.label">
+          <el-select 
+            v-if="item.inputType == 'select'"
+            v-model="item.value"
+            clearable 
+            :placeholder="item.placeholder">
+            <el-option v-for="(v, i) in item.inputOptions" :key="i" :label="v" :value="v"></el-option>
+          </el-select>
+          <el-input                       
+            v-else
+            v-model="item.value" 
+            label-width='80px' 
+            :placeholder="item.placeholder"
+            @input="onInput()" >
+          </el-input>
+        </el-form-item>
+        </span>
+      </el-form>
+    </div>
 
     <!-- 指标看板 -->
     <div
@@ -63,13 +63,13 @@
       <Tinymce ref="editor" v-model="newsContext" :height="'100%'" />
     </div>
     <!-- 表格看板 -->
-    <div v-else-if="type=='tab'" style="height:100%;">
+    <div v-else-if="type=='tab'" style="height: calc(100% - 60px);">
       <el-table
         @sort-change="sortChange"
         v-if="tableShow"
         border
-        :data="tableData.slice(0,500)"
-        style="width: 100%"        
+        :data="tableData.slice(0,500)"         
+        :max-height="tableHeight"       
       >
         <el-table-column
           v-for="(item,index) in tabColumns"
@@ -85,6 +85,11 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页组件 -->
+      <pagination 
+        v-if="isPagination == true" 
+        :paginationData="paginationData" 
+        @handleCurrentChange="handleCurrentChange" />
     </div>
     <!-- 饼图/漏斗图看板 -->
     <div v-else-if="type=='pie'||type=='funnel'" style="height:100%;">
@@ -134,7 +139,8 @@ import pieFunelChart from "./pieFunelChart";
 import mixChart from "./mixChart";
 import DatePicker from "./dateTimePicker";
 import DateQuick from "./dateQuickBtn";
-import { getVariablesByStr, getNewRadioDate } from "@/utils"
+import { getVariablesByStr, getNewRadioDate } from "@/utils";
+import Pagination from "@/components/pagination";
 export default {
   props: {
     componentData: {
@@ -182,12 +188,23 @@ export default {
       //筛选条件
       getDataWay: '',
       searchItems: [],
-
+      //日期筛选
       dateRadio: "",
       dateRadioOptions: ["今日", "昨日", "近两日(含今日)", "近3天", "近7天", "近30天"],
+      //表格分页
+      isPagination: false,
+      paginationData: {
+        pageNumber: 1,
+        pageSize: 5,
+        total: 0
+      },
+      isHasSearch: false,
+      tableHeight: 300,
+      //是否展示图表label
+      isShowChartLabel: false,
     };
   },
-  mounted() {
+  mounted() {    
     console.log('组件数据更新',this.componentData)
     this.type = this.componentData.type;
     this.id = this.componentData.i;
@@ -204,33 +221,56 @@ export default {
       let componentData = this.componentData;
       let { area_measure, area_dim, getDataWay, sqlString, searchItems } = componentData.queryInput;
       let { data } = componentData;      
-
+      
       //变量参数配置
       this.getDataWay = getDataWay
       if (getDataWay == 'sql') {           
         const matchArr = getVariablesByStr(sqlString);          
         searchItems = searchItems ? searchItems: [];          
         let newSearchItems = [];
-        matchArr.map(item=> {
-          let arr = {};
-          arr.label = item.label;
-          arr.value = '';        
-          arr.placeholder = item.placeholder;  
-          arr.show = item.show; 
-          arr.inputType = item.inputType;   
-          arr.inputOptions = item.inputOptions;                
-          for (let i in searchItems) {
-            if (searchItems[i].label == item.label) {
-              arr.value = searchItems[i].value;              
+        console.log('====matchArr:', matchArr);
+        matchArr.map(item=> {                    
+            //配置数据筛选
+            let arr = item;            
+            arr.value = '';        
+            for (let i in searchItems) {
+              if (searchItems[i].label == item.label) {
+                arr.value = searchItems[i].value ? searchItems[i].value: ( arr.inputValue ? arr.inputValue: '');              
+              }
+            }          
+            //配置分页
+            if (item.label == '分页') {              
+              this.isPagination = true;
+              this.paginationData.pageSize = item.pageSize ? parseInt(item.pageSize): 5;  
+              this.paginationData.pageNumber = arr.value ? parseInt(arr.value): 1;  
             }
-          }          
-          newSearchItems.push(arr);
+            //是否显示筛选条件
+            item.show != 'false'?this.isHasSearch = true:'';
+            //是否展示图表label
+            this.isShowChartLabel = (item.isShowChartLabel == 'true')? true:false;
+            //赋值筛选条件
+            newSearchItems.push(arr);          
           
-        });
+        });        
         this.searchItems = newSearchItems;                              
       }
 
       if (type == "line" || type == "bar" || type == "mix") {
+        //配置折线图柱状图指标        
+        if (this.isShowChartLabel && typeof(data) != 'undefined' && typeof(data.data[0]) != 'undefined' && typeof(data.data[0]['label']) == 'undefined') {
+          data.data.map(item=>{
+            item['label'] = {
+              normal: {
+                  show: true,
+                  position: 'top',
+                  formatter: function (params) {
+                    return parseFloat(params.value).toLocaleString();
+                  }
+              }
+            }
+          })
+        }        
+
         this.lbmixDataJson = data
           ? data
           : {
@@ -254,18 +294,19 @@ export default {
         if (getDataWay == 'sql') {                         
           //sql查询
           let tableColumn = [];
-          if (data) {
-            for (let key in data[0]) {
+          if (data.list) {
+            for (let key in data.list[0]) {
               let arr = {};
               arr.fact_column = key;
               arr.column = key;
               tableColumn.push(arr);
             }
           }                   
-          this.setTabConfig(tableColumn, [] ,data? data: []);
+          this.paginationData.total = parseInt(data.total) ? parseInt(data.total):0;          
+          this.setTabConfig(tableColumn, [] ,data.list? data.list: []);
         } else {
           //模型查询
-          this.setTabConfig(area_measure, area_dim ,data? data: []);
+          this.setTabConfig(area_measure, area_dim ,data.list? data.list: []);
         }
         
       } else if(type == "text"){
@@ -273,6 +314,7 @@ export default {
         this.newsContext = componentData.text;
       }
       
+      this.setTableHeight();
     },
   },
   methods: {
@@ -291,7 +333,8 @@ export default {
     searchSubmit() {      
       let params = {
         item: this.componentData,
-        searchItems: this.searchItems
+        searchItems: this.searchItems,
+        sortConfig: this.sortConfig
       }                  
       this.$emit("itemRefreshSubmit", params);
     },
@@ -299,9 +342,13 @@ export default {
       this.$forceUpdate();
     },
     parentHandleclick(e) {
-      this.$refs.chartChild.$_resizeHandler();
-      this.$refs.chartChild.$_initResizeEvent();
-      this.$refs.chartChild.$_initSidebarResizeEvent();
+      if (this.$refs.chartChild) {
+        this.$refs.chartChild.$_resizeHandler();
+        this.$refs.chartChild.$_initResizeEvent();
+        this.$refs.chartChild.$_initSidebarResizeEvent();
+      }
+      //配置表格高度
+      this.setTableHeight();
     },
     sortChange(res) {
       if (res.prop == null) return;
@@ -309,12 +356,8 @@ export default {
       res.order == "ascending"
         ? (this.sortConfig.sort = "asc")
         : (this.sortConfig.sort = "desc");
-      //触发排序更新数据操作
-      let params = {
-        item: this.componentData,
-        sortConfig: this.sortConfig,
-      };
-      this.$emit("itemRefreshSubmit", params);
+      //触发排序更新数据操作      
+      this.searchSubmit();      
     },
     setTabConfig(area_measure, area_dim) {
       let tableColumn = [];
@@ -327,7 +370,7 @@ export default {
         });
       });
       this.tabColumns = tableColumn;
-      this.tableData = this.componentData.data;
+      this.tableData = this.componentData.data.list ? this.componentData.data.list: [];
     },
 
     /**
@@ -339,7 +382,26 @@ export default {
     },
 
 
+    /*
+     * 切换分页
+     */
+    handleCurrentChange(val) {      
+      this.paginationData.pageNumber = val;
+      this.searchItems.map(item => {
+        if (item.label == '分页') {
+          item.value = val
+        }
+      })
+      this.searchSubmit();
+    },
 
+    /**
+     * 配置表格高度值
+     */
+    setTableHeight() {
+      let tableHeight = this.$refs.componentItem.offsetHeight;                 
+      this.tableHeight = this.isHasSearch ? tableHeight-62: tableHeight-2;
+    }
 
   },
   components: {
@@ -348,7 +410,8 @@ export default {
     DatePicker,
     DateQuick,
     CountTo,
-    Tinymce
+    Tinymce,
+    Pagination
   },
 };
 </script>

@@ -14,6 +14,7 @@ use app\model\VisualDataModelColumn;
 use app\model\VisualDataSource;
 use app\model\VisualReportPage;
 use app\model\VisualReportPageComponents;
+use app\service\VisualService;
 
 /**
  * 报表管理
@@ -75,6 +76,16 @@ class Visual extends Base
         $data = [
             'list'=>$sources
         ];
+        return json_ok($data);
+    }
+
+    /**
+     * 获取图表数据
+     * @route("getComResultData", method="post")
+     */
+    public function getComResultData() {        
+        $queryInput = json_decode(input('queryInput'));        
+        $data = VisualService::getComResultData($queryInput);
         return json_ok($data);
     }
 }

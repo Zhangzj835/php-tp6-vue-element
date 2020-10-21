@@ -185,5 +185,8 @@ export default {
 }
 </script>
 <style lang="scss">
-
+  .CodeMirror{
+    height: 400px;
+    font-size: 14px;
+  }
 </style>

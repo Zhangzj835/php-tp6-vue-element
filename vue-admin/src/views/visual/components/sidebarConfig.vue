@@ -34,8 +34,7 @@
       </div>
       
       <!--温馨提示-->
-      <div>
-        <br/>
+      <div>        
         &nbsp;&nbsp;温馨提示
         <el-button type="text" @click="dialogVisibleTip = true">（点击查看）</el-button><br/>
         <el-dialog
@@ -45,11 +44,16 @@
           <span>
             <ol>
             <li>配置可变参数的格式为：${XXX}</li>            
+            <li>参数类型：<span style="color:orange">columnType</span>
+              <div>如：${班级名称||columnType=string}</div>
+              <div>如：${人数||columnType=number}</div>
+            </li>            
             <li>输入框提示配置 <span style="color:orange">placeholder</span>：
-              <div>如：${今日||placeholder=格式为：xxxx-xx-xx}</div>
+              <div>如：${日期||placeholder=请输入日期}</div>
             </li>
-            <li>默认值配置 <span style="color:orange">default</span>：
-              <div>如：${姓名||default=张三}</div>
+            <li>默认值配置 <span style="color:orange">inputValue</span>(显式) 或 <span style="color:orange">default</span>(隐式)：
+              <div>如：${姓名||default=张三} 输入框内不显示</div>
+              <div>如：${姓名||inputValue=张三}  输入框默认显示</div>
               <div>延伸：((phone='${手机号码||default=' or phone!='}') and (nickname='${昵称||default=' or nickname != '}'))  可实现多条件组合查询，空值不作为查询条件</div>
             </li>
             <li>随页面时间控件查询 <span style="color:orange">filterDate</span>：
@@ -65,9 +69,16 @@
               <div>如：${渠道||inputType=select||inputOptions=京东,淘宝}</div>
             </li>
             <li>特殊可变参数有：
-              <div>${今日}:系统自动替换为当天日期,格式为：20201002</div>
-              <div>${昨日}:系统自动替换为昨天日期,格式为：20201001</div>
+              <div>${<span style="color:orange">今日</span>}:系统自动替换为当天日期,格式为：20201002</div>
+              <div>${<span style="color:orange">昨日</span>}:系统自动替换为昨天日期,格式为：20201001</div>
             </li>
+            <li>表格分页配置：
+              <div>关键字 ${<span style="color:orange">分页</span>},配于sql之后</div>
+              <div>如：${分页||show=false||pageSize=5}，show配置不显示组件，pageSize配置翻页条数</div>
+            </li>
+            <li>折线图柱状图配置是否显示指标数值 <span style="color:orange">isShowChartLabel</span>：              
+              <div>如：${配置||show=false||columnType=string||isShowChartLabel=true} show配置不显示组件，columnType避免识别替换为0</div>
+            </li>           
             <li>查询优先级排序为：
               <div>图表中的筛选条件 > 页面中筛选条件 > sql内的default默认值 > 特殊可变参数 </div>
             </li>
@@ -646,7 +657,7 @@ export default {
           model_id,
         }).then((res) => {
           this.modelColumnLoading = false;
-          let data = res.data.list;
+          let data = res.data;
           this.dataModelsColumn = data;
           let measure = [];
           let dimension = [];
@@ -708,10 +719,8 @@ export default {
     getDataModels() {
       try {
         getDataModels().then((res) => {
-          if (res.code == 10000) {
-            this.dataModels = res.data.list;
-            this.configInit();
-          }
+          this.dataModels = res.data;
+          this.configInit();
         });
       } catch (error) {}
     },
@@ -722,7 +731,7 @@ export default {
     getDataSources() {
         try {
         getDataSources().then((res) => {
-          if (res.code == 10000) {
+          if (res.code == 200) {
             this.dataSourceArr = res.data.list;            
           }
         });
@@ -866,22 +875,19 @@ export default {
       if (this.form.getDataWay == 'sql') {           
         const matchArr = getVariablesByStr(this.form.sqlString);          
         let oldSearchItems = this.form.searchItems ? this.form.searchItems: [];          
-        let newSearchItems = [];
-        matchArr.map(item=> {
-          let arr = {};
-          arr.label = item.label;
-          arr.value = '';        
-          arr.inputType = item.inputType;  
-          for (let i in oldSearchItems) {
-            if (oldSearchItems[i].label == item.label) {
-              arr.value = oldSearchItems[i].value;
-            }
-          }          
-          newSearchItems.push(arr);
+        let newSearchItems = [];        
+        matchArr.map(item=> {          
+            let arr = item;            
+            arr.value = '';         
+            for (let i in oldSearchItems) {
+              if (oldSearchItems[i].label == item.label) {
+                arr.value = oldSearchItems[i].value ? oldSearchItems[i].value: (item.inputValue ? item.inputValue:'');
+              }
+            }          
+            newSearchItems.push(arr);
         });
         this.form.searchItems = newSearchItems;                                     
       }
-
       this.$emit("componentUpdate", this.form);
     },
 
