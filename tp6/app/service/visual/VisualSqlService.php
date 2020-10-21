@@ -6,6 +6,7 @@ namespace app\service\visual;
 
 use app\model\VisualDataSource;
 use think\facade\Db;
+use think\DbManager;
 
 class VisualSqlService
 {
@@ -31,7 +32,7 @@ class VisualSqlService
         $total = 0; 
         if ($config['source_type'] == 'mysql') {            
             $conf = [
-                'type'              => 'mysql',                
+                'type'              => 'mysqli',                
                 'hostname'          => '127.0.0.1',
                 'database'          => 'phpcmsv9',
                 'username'          => 'root',
@@ -44,13 +45,11 @@ class VisualSqlService
             $config['connections']['mysql']['username']=$conf['username'];
             $config['connections']['mysql']['password']=$conf['password'];
             $config['connections']['mysql']['database']=$conf['database']; 
-            config($config, 'database');
-            $list = Db::connect()->query("SELECT * FROM v9_collection_content limit 10");
-            // ->query("SELECT * FROM v9_collection_content limit 10")
-            // $list = Db->query();
-            dump($list);
-            dump(123);
-            exit();
+            config($config, 'database');            
+            $db = new DbManager();
+            $db->setConfig($config);
+            $data = $db->query("SELECT * FROM v9_collection_content limit 10");
+            
         } elseif ($config['source_type'] == 'kylin') {
             
         } elseif ($config['source_type'] == 'impala') {
