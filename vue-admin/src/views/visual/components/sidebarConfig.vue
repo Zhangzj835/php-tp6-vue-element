@@ -657,7 +657,7 @@ export default {
           model_id,
         }).then((res) => {
           this.modelColumnLoading = false;
-          let data = res.data;
+          let data = res.data.list;
           this.dataModelsColumn = data;
           let measure = [];
           let dimension = [];
@@ -719,7 +719,7 @@ export default {
     getDataModels() {
       try {
         getDataModels().then((res) => {
-          this.dataModels = res.data;
+          this.dataModels = res.data.list;
           this.configInit();
         });
       } catch (error) {}
@@ -730,8 +730,8 @@ export default {
      */
     getDataSources() {
         try {
-        getDataSources().then((res) => {
-          if (res.code == 200) {
+        getDataSources().then((res) => {          
+          if (res.code == 10000) {
             this.dataSourceArr = res.data.list;            
           }
         });

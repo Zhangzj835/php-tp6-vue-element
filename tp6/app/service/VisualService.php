@@ -21,7 +21,7 @@ class VisualService
      */
     public static function getComResultData($queryInput) {                
         $metaData = [];
-        if ($queryInput->getDataWay == 'sql'){
+        if ($queryInput['getDataWay'] == 'sql'){
             //sql原生获取数据
             $metaData = VisualSqlService::getData($queryInput);
         } else {

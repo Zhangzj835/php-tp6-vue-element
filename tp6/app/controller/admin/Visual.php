@@ -84,7 +84,7 @@ class Visual extends Base
      * @route("getComResultData", method="post")
      */
     public function getComResultData() {        
-        $queryInput = json_decode(input('queryInput'));        
+        $queryInput = json_decode(input('queryInput'), true);        
         $data = VisualService::getComResultData($queryInput);
         return json_ok($data);
     }
