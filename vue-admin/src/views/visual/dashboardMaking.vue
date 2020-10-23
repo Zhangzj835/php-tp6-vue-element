@@ -9,7 +9,7 @@
               <el-radio :label="'preview'">预览</el-radio>
             </el-radio-group>
             <el-button class="save-button" type="primary" @click="saveSubmit">保存</el-button>
-            <el-button size="mini" v-if="!publishStatus&&identification" @click="statusChange()">重新发布</el-button>
+            <!-- <el-button size="mini" v-if="!publishStatus&&identification" @click="statusChange()">重新发布</el-button> -->
           </el-row>
         </div>
       </div>
@@ -760,8 +760,7 @@ export default {
       });
       let body = {
         id: identification,
-        parent_id: query.parent_id,        
-        user_name: this.userInfo.name,
+        parent_id: query.parent_id,                
         status: 1,
         components: components,
       };
@@ -770,7 +769,7 @@ export default {
       // return;
       try {
         saveDashboardMaking(body).then((res) => {
-          if (res.code == 200) {
+          if (res.code == 10000) {
             if (res.data.page_id) {
               this.identification = res.data.identification;
             }
@@ -943,8 +942,8 @@ export default {
 </style>
 <style scoped>
 .svg-icon{
-  width: 2em;
-  height: 2em;
+  width: 1em;
+  height: 1em;
 }
 
 </style>
