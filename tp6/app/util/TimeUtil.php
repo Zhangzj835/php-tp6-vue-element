@@ -121,4 +121,23 @@ class TimeUtil
         }
         return [$first, $last];
     }
+
+    /**
+     * 根据中文获取对应的值时间值
+     */
+    public static function  getValueByZh($zh)
+    {
+        $res = '';
+        switch ($zh) {
+            case '今日':
+                $res = date('Ymd', self::getDateByDay(0));
+                break;
+            case '昨日':
+                $res = date('Ymd', self::getDateByDay(-1));
+                break;
+            default:
+                break;
+        }
+        return $res;
+    }
 }

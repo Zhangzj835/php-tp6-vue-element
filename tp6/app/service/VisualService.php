@@ -30,7 +30,8 @@ class VisualService
         }
         $data = [
             'dataRes'=> [
-                "list"=>$metaData
+                "list"=>$metaData['list'],
+                "total"=>$metaData['total']
             ],
             'dt'=> [],
             'metadata' => $metaData
