@@ -30,37 +30,35 @@ class SystemUtil
      */
     public static function getVariablesByStr($str) {
         // $pattern = "/\$\{([^\}]+)\}/gi";
-        $pattern = '/{(.*)}/';
-        preg_match($pattern , $str, $matchRes);
-        dump($str);
-        dump($matchRes);
-        exit;
-        // let matchRes = str.match(reg)
+        $pattern = '/\$\{([^\}]+)\}/i';        
+        preg_match_all($pattern , $str, $matchRes);        
         $variables = [];
         $labels = [];
-        // if (matchRes) {		
-        // matchRes.map(item=> {
-        //     item = item.replace('${', '')
-        //     item = item.replace('}', '')
-        //     let arr = item.split('||')
-        //     if (labels.indexOf(arr[0]) < 0) {
-        //     let obj = {}
-        //     obj.label = arr[0]
-        //     obj.variable = item
-        //     for (let i in arr) {
-        //         if (i != 0) {              
-        //         let pos = arr[i].indexOf('=')
-        //         let key = arr[i].substr(0, pos)
-        //         let value = arr[i].substr(pos+1)
-        //         obj[key] = value
-        //         }
-        //     }
-        //     labels.push(obj.label)
-        //     variables.push(obj)
-        //     }
-        // })
-        // }		
-        return  variables;
+        if ($matchRes[1]) {		
+            foreach ($matchRes[1] as $item) {
+                $arr = explode('||', $item);
+                if (!in_array($arr[0], $labels)) {
+                    $obj = [];
+                    $obj['label'] = $arr[0];
+                    $obj['variable'] = $item;
+                    foreach ($arr as $k=>$v) {
+                        if ($k != 0) {              
+                            $pos = $v.indexOf('=')
+                            $key = $arr[$k].substr(0, pos)
+                            $value = $arr[$k].substr(pos+1)
+                            $obj[key] = value
+                        }
+                    }
+                    $labels[] = $arr[0];
+                    $variables[] = $obj;
+                    
+                }
+            }
+            
+        }		
+        dump($variables);
+        exit;
+        return  $variables;
     }
 
 }
