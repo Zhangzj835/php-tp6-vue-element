@@ -119,7 +119,7 @@ export default {
       loading: false,
       userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息
       pageName: "", //报表名称
-      menu_id: 0, //页面ID，编辑的时候用
+      identification: 0, //页面ID，编辑的时候用
       editPreviewShow: "edit", //切换编辑模式or预览模式
       dateValue: [],
       focusItem: null,
@@ -147,8 +147,9 @@ export default {
   },
   methods: {
     async init() {
-      let menu_id = this.$route.name;
-      this.menu_id = menu_id ? menu_id : 0;
+      let query = this.$route.query;
+      let params = this.$route.path.split('/');      
+      this.identification = params[3] ? params[3] : "";
       this.getMenuChildren();
       this.downloadPermission();
     },
@@ -241,20 +242,14 @@ export default {
       });
     },
     getMenuChildren() {
-      try {
-        getMenuChildren({
-          rpt_menu_id: this.menu_id,
-        }).then((res) => {
-          if (res.data.length) {
-            this.getMenuComponents(res.data[0].id);
-          }
-        });
+      try {        
+        this.getMenuComponents(this.identification);          
       } catch (error) {}
     },
-    getMenuComponents(menu_id) {
+    getMenuComponents(identification) {
       try {
         getMenuComponents({
-          menu_id,
+          identification,
         }).then((res) => {
           this.loading = true;
           let dashboardLayout = [];
@@ -264,7 +259,7 @@ export default {
             let layout_info = JSON.parse(item.layout_info);
             let query_input = JSON.parse(item.query_input);
             dashboardLayout.push({
-              dashboardId: menu_id,
+              dashboardId: identification,
               dataFromId: item.component_model,
               h: layout_info.h,
               i: item.id,

@@ -7,10 +7,10 @@
     <div class="header mb-10">{{sidebarTitle}}</div>
     <el-button type="primary" @click="updateSubmit" class="update-btn">更新</el-button>
 
-    <div class="header-setting-type">
+    <!-- <div class="header-setting-type">
         <el-button :type="(form.getDataWay != 'sql')?'primary':'plain'" size="small" @click="selectGetWay('')">选择模型</el-button>
         <el-button :type="(form.getDataWay == 'sql')?'primary':'plain'" size="small" @click="selectGetWay('sql')">输入SQL</el-button>
-    </div>
+    </div> -->
 
     <!-- sql配置 -->
     <div v-if="form.getDataWay == 'sql'">
@@ -431,7 +431,7 @@ export default {
         selectSecondDimension: [],
         selectMeasure: [],
         selectScondMeasure: [],
-        getDataWay: '',  //获取数据方式 1:模型拖拽配置 2:sql获取
+        getDataWay: 'sql',  //获取数据方式 1:模型拖拽配置 2:sql获取
         sqlDatasourceId: '',
         sqlString: ''
       },
@@ -515,7 +515,7 @@ export default {
         selectSecondDimension: itemConfig.queryInput.second_dim ? itemConfig.queryInput.second_dim: [],
         selectMeasure: itemConfig.queryInput.area_measure,
         selectScondMeasure: itemConfig.queryInput.second_measure,
-        getDataWay: itemConfig.queryInput.getDataWay ? itemConfig.queryInput.getDataWay: '',  //获取数据方式 '':模型拖拽配置 'sql':sql获取
+        getDataWay: itemConfig.queryInput.getDataWay ? itemConfig.queryInput.getDataWay: 'sql',  //获取数据方式 '':模型拖拽配置 'sql':sql获取
         sqlDatasourceId: itemConfig.queryInput.sqlDatasourceId,
         sqlString: itemConfig.queryInput.sqlString ? itemConfig.queryInput.sqlString: '',
         searchItems: itemConfig.queryInput.searchItems ? itemConfig.queryInput.searchItems: [],
@@ -902,6 +902,10 @@ export default {
 };
 </script>
 <style  lang="scss"  scoped>
+.el-form-item{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 .row {
   height: calc(100vh - 140px);
   border-left: 1px solid #f2f2f2;

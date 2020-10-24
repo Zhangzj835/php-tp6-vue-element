@@ -90,8 +90,9 @@ class Visual extends Base
      */
     public function getComResultData()
     {
+        $componentType = input('componentType');
         $queryInput = json_decode(input('queryInput'), true);
-        $data = VisualService::getComResultData($queryInput);
+        $data = VisualService::getComResultData($queryInput, $componentType);
         return json_ok($data);
     }
 
@@ -104,6 +105,22 @@ class Visual extends Base
         $id = input('id');
         $components = input('components');
         $data = VisualService::saveDashboardMaking($id, $components);
+        return json_ok($data);
+    }
+
+    /**
+     * 获取报表组件
+     * @route("getMenuComponents", method="get")
+     */
+    public function getMenuComponents()
+    {
+        $identification = input('identification');
+        $pageInfo = VisualReportPage::where('identification', $identification)->select()->toArray();
+        $components = [];
+        if ($pageInfo) {
+            $components = VisualReportPageComponents::where('report_page_id', $pageInfo[0]['id'])->select()->toArray();
+        }
+        $data = $components;
         return json_ok($data);
     }
 }

@@ -63,7 +63,7 @@
       <Tinymce ref="editor" v-model="newsContext" :height="'100%'" />
     </div>
     <!-- 表格看板 -->
-    <div v-else-if="type=='tab'" style="height: calc(100% - 60px);">
+    <div v-else-if="type=='tab'" style="height: calc(100% - 78px);">
       <el-table
         @sort-change="sortChange"
         v-if="tableShow"

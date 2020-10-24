@@ -17,16 +17,13 @@ class VisualSqlService
     /**
      * 根据sql获取
      */
-    public static function getData($queryInput, $isGetAll = false)
+    public static function getData($queryInput, $isGetAll = false, $componentType = 'tab')
     {
         // 变量参数替换
         $sqls = self::getSqlByStr($queryInput);
         $runSql = $isGetAll ? $sqls['originSql'] : $sqls['sql'];
         // 获取数据源配置        
         $config = self::getConfigBySourceId($queryInput['sqlDatasourceId']);
-        // dump($runSql);
-        // dump($config);
-        // exit;
         // 根据sql获取数据集
         $data = [];
         $total = 0;
@@ -41,9 +38,13 @@ class VisualSqlService
         } elseif ($config['source_type'] == 'impala') {
         }
 
+        //图表数据整理(有空移到前端来处理)
+        $echartData = self::assembleEchartOption($data, $total, $componentType);
+
         $res = [
-            'list' => $data,
-            'total' => $total
+            'metadata' => $data,
+            'dataRes' => $echartData,
+            'dt' => []
         ];
         return $res;
     }
@@ -54,8 +55,6 @@ class VisualSqlService
     private static function getSqlByStr($queryInput)
     {
         $sql = $queryInput['sqlString'];
-        // $sql = 'select * from v9_collection_content limit 5';
-
         $filters = $queryInput['filters'];
         //过滤条件
         $filterDate = self::getFilterDate($filters);
@@ -72,13 +71,15 @@ class VisualSqlService
         foreach ($matchArr as $value) {
             $flag = true;
             foreach ($searchItems as $v) {
-                if ($v['label'] == '分页') {
-                    $sql = self::sqlReplace($sql, $value['variable'], '', false);
-                    $pagination['enable'] = true;
-                    $pagination['pageNumber'] = !empty($v['value']) ? $v['value'] : $pagination['pageNumber'];
-                    $pagination['pageSize'] = !empty($value['pageSize']) ? $value['pageSize'] : $pagination['pageSize'];
+                if ($v['label'] == $value['label']) {
+                    if ($v['label'] == '分页') {
+                        $sql = self::sqlReplace($sql, $value['variable'], '', false);
+                        $pagination['enable'] = true;
+                        $pagination['pageNumber'] = !empty($v['value']) ? $v['value'] : $pagination['pageNumber'];
+                        $pagination['pageSize'] = !empty($value['pageSize']) ? $value['pageSize'] : $pagination['pageSize'];
+                    }
+                    $flag = false;
                 }
-                $flag = false;
             }
             if ($flag) {
                 $sql = self::sqlReplace($sql, $value['variable'], '', false);
@@ -88,7 +89,7 @@ class VisualSqlService
         foreach ($matchArr as $value) {
             foreach ($searchItems as $item) {
                 if ($item['label'] == $value['label']) {
-                    $value['columnType'] = !empty($value['columnType']) ? $value['columnType'] : 'string';
+                    $value['columnType'] = !empty($value['columnType']) ? $value['columnType'] : '';
                     if ($item['value']) {
                         //组件内查询配置
                         $sql = self::sqlReplace($sql, $value['variable'], $item['value'], true, $value['columnType']);
@@ -171,6 +172,7 @@ class VisualSqlService
             //直接替换
             $sql = str_replace($key, $value, $sql);
         } else {
+
             if ($columnType == 'string') {
                 $sql = str_replace($key, $value, $sql);
             } else if ($columnType == 'number') {
@@ -197,5 +199,139 @@ class VisualSqlService
         }
         $config['source_config'] = json_decode($config['source_config'], true);
         return $config;
+    }
+
+    private static function assembleEchartOption($data, $total = 0, $type)
+    {
+        if (empty($data)) {
+            return $data;
+        }
+        $dataRes = [];
+        //配置各个组件的输出格式
+        if ($type == 'line' || $type == 'bar') { //折线图&柱状图
+            $dataRes['data'] = [];
+            $dataRes['legends'] = [];
+            $dataRes['xAxis'] = [];
+            //指标类型
+            $colKey = 0;
+            foreach ($data[0] as $key => $value) {
+                if ($colKey != 0) {
+                    $dataRes['legends'][] = $key;
+                    $arr = [];
+                    $arr['barWidth'] = 30;
+                    $arr['data'] = [];
+                    $arr['name'] = $key;
+                    $arr['smooth'] = false;
+                    $arr['type'] = $type;
+                    $arr['yAxisIndex'] = 0;
+                    $dataRes['data'][] = $arr;
+                }
+                $colKey++;
+            }
+            //横坐标及数据            
+            foreach ($data as $item) {
+                $colKey = 0;
+                foreach ($item as $value) {
+                    if ($colKey == 0) {
+                        $dataRes['xAxis'][] = $value;
+                    } else {
+                        $i = $colKey - 1;
+                        $dataRes['data'][$i]['data'][] = $value;
+                    }
+                    $colKey++;
+                }
+            }
+        } else if ($type == 'mix') {            //组合图                        
+            $dataRes['data'] = [];
+            $dataRes['legends'] = [];
+            $dataRes['xAxis'] = [];
+            $colKey = 0;
+            foreach ($data[0] as $key => $value) {
+                if ($colKey == 1) {
+                    $dataRes['legends'][] = $key;
+                    $arr = [];
+                    $arr['barWidth'] = 30;
+                    $arr['data'] = [];
+                    $arr['name'] = $key;
+                    $arr['smooth'] = false;
+                    $arr['type'] = 'line';
+                    $arr['yAxisIndex'] = 0;
+                    $dataRes['data'][] = $arr;
+                }
+                if ($colKey == 2) {
+                    $dataRes['legends'][] = $key;
+                    $arr = [];
+                    $arr['barWidth'] = 30;
+                    $arr['data'] = [];
+                    $arr['name'] = $key;
+                    $arr['smooth'] = false;
+                    $arr['type'] = 'bar';
+                    $arr['yAxisIndex'] = 0;
+                    $dataRes['data'][] = $arr;
+                }
+                $colKey++;
+            }
+            //横坐标及数据
+            foreach ($data as $item) {
+                $colKey = 0;
+                foreach ($item as $value) {
+                    if ($colKey == 0) {
+                        $dataRes['xAxis'][] = $value;
+                    } else if ($colKey == 1) {
+                        $dataRes['data'][0]['data'][] = $value;
+                    } else if ($colKey == 2) {
+                        $dataRes['data'][1]['data'][] = $value;
+                    }
+                    $colKey++;
+                }
+            }
+        } else if ($type == 'pie') {            //饼状图
+            $dataRes['data'] = [];
+            $dataRes['xAxis'] = [];
+            foreach ($data as $item) {
+                $arr = [
+                    'name' => '',
+                    'value' => 0
+                ];
+                $colKey = 0;
+                foreach ($item as $key => $value) {
+                    if ($colKey == 0) {
+                        $arr['name'] = $value;
+                    } else if ($colKey == 1) {
+                        $arr['value'] = (float)$value;
+                    }
+                    $colKey++;
+                }
+                $dataRes['data'][] = $arr;
+            }
+        } else if ($type == 'index' || $type == 'funnel') {          //指标图&漏斗图
+            $dataRes['data'] = [];
+            $dataRes['xAxis'] = [];
+            foreach ($data as $item) {
+                $arr = [
+                    'name' => '',
+                    'value' => 0,
+                    'label' => ''
+                ];
+                $colKey = 0;
+                foreach ($item as $key => $value) {
+                    if ($colKey == 0) {
+                        $arr['name'] = $value;
+                    } else if ($colKey == 1) {
+                        $arr['value'] = (float)$value;
+                        $arr['label'] = $key;
+                    }
+                    $colKey++;
+                }
+                $dataRes['data'][] = $arr;
+            }
+        } else if ($type == 'tab') {
+            $dataRes['list'] = empty($data) ? [] : $data;
+            $dataRes['total'] = $total;
+        } else {
+            $dataRes = $data;
+        }
+
+        return $dataRes;
     }
 }

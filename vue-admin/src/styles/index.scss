@@ -208,6 +208,150 @@ aside {
     background-color: #999;  /*滚动条的背景颜色*/
 }
 
+/*定义滑块 内阴影+圆角*/  
+::-webkit-scrollbar-thumb  
+{  
+    border-radius: 10px;  /*滚动条的圆角*/
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);  
+    background-color: #999;  /*滚动条的背景颜色*/
+}
+//超出省略号
+.text-hide{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+}
+.card-panel-num{
+	word-wrap:break-word
+}
+.br10{
+  border-radius: 2px;
+}
+// .hideSidebar .el-tooltip > div{
+//   margin-right: 12px!important;
+// }
+.el-table--scrollable-x .el-table__body-wrapper{
+  // z-index: 99;
+}
+.el-table__fixed-body-wrapper{
+  z-index: 99;
+}
+/*大于1200px屏幕尺寸应用以下样式*/
+@media screen and (min-width:1200px){ 
+  
+  .index-container .card-panel-num{
+      font-size: 25px!important;
+    }
+}
+/*大于960px小于1199px屏幕尺寸应用以下样式*/
+@media screen and (min-width:960px) and (max-width:1199px) { 
+  
+    .index-container .card-panel-num{
+      font-size: 22px!important;
+    }
+    .card-panel-text,.chart-wrapper-title{
+      font-size:14px!important;
+    }
+}
+/*大于768px小于959px屏幕尺寸应用以下样式*/
+@media screen and (min-width: 768px) and (max-width: 959px) { 
+ 
+    .index-container .card-panel-num{
+      font-size: 20px!important;
+    }
+    .card-panel-text,.chart-wrapper-title{
+      font-size:14px!important;
+    }
+}
+/*大于480px小于767px屏幕尺寸应用以下样式*/
+@media only screen and (min-width: 767px) and (max-width:767px){ 
+  
+  .index-container .card-panel-num{
+      font-size: 18px!important;
+    }
+    .card-panel-text,.chart-wrapper-title{
+      font-size:14px!important;
+    }
+}
+/*小于479px屏幕尺寸应用以下样式*/
+@media only screen and (max-width: 479px) { 
+  
+  .index-container .card-panel-num{
+      font-size: 16px!important;
+    }
+    .card-panel-text,.chart-wrapper-title{
+      font-size:14px!important;
+    }
+}
+.el-progress__text{
+  margin-left: 13px;
+}
+.box-card-component{
+  margin-left: 0;
+}
+.el-date-editor .el-range-input{
+  font-size: 12px;
+}
+
+.container-box{
+  // margin-bottom: 24px;
+  border-radius: 2px;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.el-submenu__title,.submenu-title-noDropdown span{
+  font-size: 13px!important;
+  color:#fff!important;
+}
+// 覆盖样式
+.el-radio-button .el-radio-button__inner{
+  border:0;
+  border-right: 1px solid #DCDFE6;
+}
+.dateRadio .el-radio-button__inner{
+  padding: 4px 9px;
+}
+.el-radio-button:first-child .el-radio-button__inner{
+  border-left: 0;
+  padding-left: 0;
+}
+.el-radio-button__orig-radio:checked+.el-radio-button__inner{
+  background: #fff;
+  color:#24A0FF;
+  border-color: #DCDFE6;
+  box-shadow: -1px 0 0 0 #DCDFE6; 
+}
+.el-radio-button__inner{
+  color:rgb(190,197,220);  
+}
+.el-date-editor .el-range-input{
+  width: 36%;
+}
+.el-date-editor .el-range-separator{
+  margin-right: 7px;
+}
+.wrap-table .el-table--enable-row-hover .el-table__body tr:hover>td{
+  background-color: #fff !important;
+}
+.index-container .box-card-component .progress-item,.index-container .el-progress__text{
+  font-size: 12px!important;
+}
+
+.chart-wrapper .el-input,.card-panel .el-input{
+  font-size: 12px!important;
+}
+.chart-wrapper-title{
+  color: #000;
+    font-size: 17px;
+    margin-bottom: 12px;
+    padding-left: 10px;
+    border-left: 4px solid #409eff;
+}
+
 //栅格拖动布局
 .vue-grid-item{
   background: #fff;
