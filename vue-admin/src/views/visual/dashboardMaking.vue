@@ -64,19 +64,16 @@
                   @moved="movedEvent"
                 >
                   <div class="content" style="position:relative;" @click="itemClick(item)">
-                    <div
-                      class="vue-draggable-handle"
-                      style="display:inline-block;position:absolute;top:0;left:0;z-index:9999;"
-                    >
-                      <el-button size="small" type="primary">拖拽</el-button>
-                    </div>
+                    <el-tooltip class="item" effect="dark" content="拖拽移动" placement="top">
+                      <div class="vue-draggable-handle"></div>
+                    </el-tooltip>
                     <div
                       class="no-drag"
                       :class="itemFocusId==item.i?'focus':''"
                       :style="item.type=='text'?'overflow-y: auto;':''"
                     >
-                      <div v-if="item.type!='filter'&&item.type!='text'" class="component-title">
-                        <el-input v-model="item.title" placeholder="请输入图表标题"></el-input>
+                      <div v-if="item.type!='filter'&&item.type!='text'" class="chart-wrapper-title component-title">
+                        <el-input v-model="item.title" placeholder="请输入图表标题" size="mini"></el-input>
                       </div>
 
                       <!-- 可视化视图 -->
@@ -896,7 +893,9 @@ export default {
   padding: 0;
   .component-title {
     width: 200px;
-    margin-bottom: 20px;
+    height: 28px;
+    margin-bottom: 12px;    
+    padding-left: 0px;
   }
   .container-box {
     padding: 0;
@@ -939,11 +938,29 @@ export default {
 .save-button{
   margin-left: 10px;
 }
+.vue-draggable-handle{
+  // display:inline-block;  
+  position:absolute;
+  width: calc(100% - 4px);
+  height: 24px;
+  top:2px;
+  left:2px;
+  right:2px;
+  z-index:9999;
+  // background-color: #ebeef5;
+}
+.vue-draggable-handle:hover {
+  background-color:antiquewhite;
+}
+
 </style>
 <style scoped>
 .svg-icon{
   width: 1em;
   height: 1em;
 }
-
+.el-input__inner {
+    height: 24px;
+    line-height: 24px;
+}
 </style>
