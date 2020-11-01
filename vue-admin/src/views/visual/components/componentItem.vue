@@ -443,6 +443,7 @@ export default {
     height: 100%;
     display: flex;
     align-items: center;
+    margin-top: 14px;
   }
   .form-search{
     padding-bottom: 10px;

@@ -367,12 +367,7 @@ aside {
 }
 //仪表板制作页面
 
-.container-editDashboard{
-  .no-drag{
-    .wrap {
-      height: calc(100% - 67px)!important;
-    }
-  }
+.container-editDashboard{  
   .mce-menubar{
     display: none;
   }
