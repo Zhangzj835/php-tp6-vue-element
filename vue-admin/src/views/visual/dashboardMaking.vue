@@ -1,39 +1,52 @@
 <template>
   <div class="container container-editDashboard">
     <div class="simple-header-container">
-      <div class="df-acenter">        
+      <div class="df-acenter">
+        <div slot="header" class="clearfix">
+          <!-- <span class="mr-10">+添加组件</span> -->
+          <el-tooltip
+            v-for="(item, index) in componentsTypes"
+            :key="index"
+            class="item"
+            effect="dark"
+            :content="item.name"
+            placement="top-start"
+          >
+            <el-button
+              size="small"
+              type="text"
+              @click="createComponents(item)"
+            >
+              <div
+                class="com-icon"
+                :style="'background-image: url(' + item.img + ');'"
+              ></div>
+            </el-button>
+          </el-tooltip>
+        </div>
         <div class="header-btn">
           <el-row>
             <el-radio-group v-model="editPreviewShow" @change="selectRadio">
               <el-radio :label="'edit'">编辑</el-radio>
               <el-radio :label="'preview'">预览</el-radio>
             </el-radio-group>
-            <el-button class="save-button" type="primary" @click="saveSubmit">保存</el-button>
+            <el-button class="save-button" type="primary" @click="saveSubmit"
+              >保存</el-button
+            >
             <!-- <el-button size="mini" v-if="!publishStatus&&identification" @click="statusChange()">重新发布</el-button> -->
           </el-row>
         </div>
       </div>
     </div>
     <el-row :gutter="3">
-      <el-col :span="editPreviewShow=='preview'||!dashboardLayout.length?24:18">
+      <el-col
+        :span="
+          editPreviewShow == 'preview' || !dashboardLayout.length ? 24 : 18
+        "
+      >
         <div class="container-box">
           <el-card>
-            <div slot="header" class="clearfix">
-              <!-- <span class="mr-10">+添加组件</span> -->
-              <el-tooltip
-                v-for="(item,index) in componentsTypes"
-                :key="index"
-                class="item"
-                effect="dark"
-                :content="item.name"
-                placement="top-start"
-              >
-                <el-button size="small" type="text" @click="createComponents(item)">
-                  <div class="com-icon" :style="'background-image: url('+item.img+');'"></div>
-                </el-button>
-              </el-tooltip>
-            </div>
-            <div style="background:rgb(235,234,239);">
+            <div style="background: rgb(235, 234, 239)">
               <grid-layout
                 :layout="dashboardLayout"
                 :col-num="12"
@@ -63,24 +76,46 @@
                   @resized="resizedEvent"
                   @moved="movedEvent"
                 >
-                  <div class="content" style="position:relative;" @click="itemClick(item)">
-                    <el-tooltip class="item" effect="dark" content="拖拽移动" placement="top">
+                  <div
+                    class="content"
+                    style="position: relative"
+                    @click="itemClick(item)"
+                  >
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="拖拽移动"
+                      placement="top"
+                    >
                       <div class="vue-draggable-handle"></div>
                     </el-tooltip>
                     <div
                       class="no-drag"
-                      :class="itemFocusId==item.i?'focus':''"
-                      :style="item.type=='text'?'overflow-y: auto;':''"
+                      :class="itemFocusId == item.i ? 'focus' : ''"
+                      :style="item.type == 'text' ? 'overflow-y: auto;' : ''"
                     >
-                      <div v-if="item.type!='filter'&&item.type!='text'" class="chart-wrapper-title component-title">
-                        <el-input v-model="item.title" placeholder="请输入图表标题" size="mini"></el-input>
+                      <div
+                        v-if="item.type != 'filter' && item.type != 'text'"
+                        class="chart-wrapper-title component-title"
+                      >
+                        <el-input
+                          v-model="item.title"
+                          placeholder="请输入图表标题"
+                          size="mini"
+                        ></el-input>
                       </div>
 
                       <!-- 可视化视图 -->
                       <component-item
-                        v-loading="item.loading&&item.type!='filter'&&item.type!='text'?item.loading:false"
+                        v-loading="
+                          item.loading &&
+                          item.type != 'filter' &&
+                          item.type != 'text'
+                            ? item.loading
+                            : false
+                        "
                         v-show="!item.tableShow"
-                        :ref="'item_'+item.i"
+                        :ref="'item_' + item.i"
                         :componentData="item"
                         @refreshSubmit="refreshSubmit"
                         @itemRefreshSubmit="itemRefreshSubmit"
@@ -88,37 +123,55 @@
                       <!-- 表格视图 -->
                       <el-table
                         border
-                        v-if="item.type!='tab'&&item.tableShow"
+                        v-if="item.type != 'tab' && item.tableShow"
                         :data="item.metadata"
-                        style="width: 100%;"
+                        style="width: 100%"
                         height="100%"
                       >
                         <el-table-column
-                          v-for="(iField,idx) in item.tableColumns"
+                          v-for="(iField, idx) in item.tableColumns"
                           :key="idx"
                           :prop="iField.prop"
                           :label="iField.label"
                         >
                           <template slot-scope="scope">
-                            <span>{{ scope.row[iField.prop]}}</span>
+                            <span>{{ scope.row[iField.prop] }}</span>
                           </template>
                         </el-table-column>
                       </el-table>
                       <br />
 
-                      <div                        
-                        style="position:absolute;right:10px;top:5px;z-index:9999;"
+                      <div
+                        style="
+                          position: absolute;
+                          right: 10px;
+                          top: 5px;
+                          z-index: 9999;
+                        "
                       >
-
-                        <el-tooltip v-if="item.queryInput.getDataWay=='sql'" class="item" effect="dark" content="刷新数据" placement="top-start">
-                          <svg-icon icon-class="caret-right" @click="clickRefreshItem(item)"/>
+                        <el-tooltip
+                          v-if="item.queryInput.getDataWay == 'sql'"
+                          class="item"
+                          effect="dark"
+                          content="刷新数据"
+                          placement="top-start"
+                        >
+                          <svg-icon
+                            icon-class="caret-right"
+                            @click="clickRefreshItem(item)"
+                          />
                         </el-tooltip>
 
                         <el-dropdown>
                           <span class="el-dropdown-link">
-                            <i class="cp-gesture el-icon-more el-icon--right fs-20"></i>
+                            <i
+                              class="cp-gesture el-icon-more el-icon--right fs-20"
+                            ></i>
                           </span>
-                          <el-dropdown-menu slot="dropdown" v-if="item.type=='filter'">
+                          <el-dropdown-menu
+                            slot="dropdown"
+                            v-if="item.type == 'filter'"
+                          >
                             <el-dropdown-item>
                               <div @click="delItem(item)">删除组件</div>
                             </el-dropdown-item>
@@ -127,14 +180,15 @@
                             <el-dropdown-item>
                               <div @click="delItem(item)">删除组件</div>
                             </el-dropdown-item>
-                            <el-dropdown-item v-show="item.type!='text'">
+                            <el-dropdown-item v-show="item.type != 'text'">
                               <div @click="downloadData(item)">导出数据</div>
                             </el-dropdown-item>
-                            <el-dropdown-item v-show="item.type!='tab'&&item.type!='text'">
-                              <div @click="switchView(item)">切换视图</div> 
+                            <el-dropdown-item
+                              v-show="item.type != 'tab' && item.type != 'text'"
+                            >
+                              <div @click="switchView(item)">切换视图</div>
                             </el-dropdown-item>
                           </el-dropdown-menu>
-                          
                         </el-dropdown>
                       </div>
                     </div>
@@ -145,10 +199,14 @@
           </el-card>
         </div>
       </el-col>
-      <el-col :span="6" v-if="editPreviewShow == 'edit'&&dashboardLayout.length">
+
+      <el-col
+        :span="6"
+        v-if="editPreviewShow == 'edit' && dashboardLayout.length"
+      >
         <div class="container-box">
           <sidebarConfig
-            v-if="focusItem!==null"
+            v-if="focusItem !== null"
             :itemConfig="focusItem"
             @updateSubmit="updateSubmit"
             @componentUpdate="componentUpdate"
@@ -169,7 +227,7 @@ import {
   getNowDay,
   getFileName,
   getRadioDate,
-  linkRelativeRatio  
+  linkRelativeRatio,
 } from "@/utils";
 import VueGridLayout from "vue-grid-layout";
 import {
@@ -187,7 +245,7 @@ export default {
     return {
       publishStatus: null, //发布状态
       pageInfo: {}, //页面信息
-      userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息      
+      userInfo: JSON.parse(localStorage.getItem("userInfo")), //用户信息
       identification: "", //页面ID，编辑的时候用
       editPreviewShow: "edit", //切换编辑模式or预览模式
       dateValue: [],
@@ -295,7 +353,7 @@ export default {
       },
       dashboardLayout: [],
       //表格变量参数
-      variables: []
+      variables: [],
     };
   },
   components: {
@@ -338,10 +396,10 @@ export default {
       this.form.dateTime = [dateTime[0], dateTime[1]];
 
       let query = this.$route.query;
-      let params = this.$route.path.split('/');      
+      let params = this.$route.path.split("/");
       this.identification = params[3] ? params[3] : "";
       this.publishStatus = query.status ? query.status : null;
-      if (this.identification) {        
+      if (this.identification) {
         this.getPageInfo();
       }
     },
@@ -363,7 +421,7 @@ export default {
       try {
         getPageInfo({
           identification,
-        }).then((res) => {          
+        }).then((res) => {
           this.pageInfo = res.data.pageInfo;
           let dashboardLayout = [];
           let data = res.data.components;
@@ -386,7 +444,7 @@ export default {
               loading: true,
               title: item.name ? item.name : "默认图表标题",
               text: layout_info.text ? layout_info.text : "",
-              dataSource: item.data_source
+              dataSource: item.data_source,
             });
           });
           this.dashboardLayout = dashboardLayout;
@@ -403,11 +461,11 @@ export default {
                   filterTags: item.queryInput.filters,
                   selectScondMeasure: item.queryInput.second_measure,
                   selectMeasure: item.queryInput.area_measure,
-                  dataSource:item.dataSource,
+                  dataSource: item.dataSource,
                   getDataWay: item.queryInput.getDataWay,
                   sqlDatasourceId: item.queryInput.sqlDatasourceId,
                   sqlString: item.queryInput.sqlString,
-                  searchItems: item.queryInput.searchItems
+                  searchItems: item.queryInput.searchItems,
                 },
                 item.type,
                 item.i
@@ -440,28 +498,28 @@ export default {
      * @param  {参数类型} id 组件id（这里用作编辑的时候，初始化请i去组件数据需要用到；如果不存在，则是点击组件时不带组件ID）
      */
     updateSubmit(form, type, id) {
-      console.log('==============update Submit form:', form);
+      console.log("==============update Submit form:", form);
 
       let itemFocusId = id ? id : this.itemFocusId;
       let dashboardLayout = JSON.parse(JSON.stringify(this.dashboardLayout));
       let componentType = type ? type : this.focusItem.type;
       if (componentType == "text") return;
-      try { 
+      try {
         getComResultData({
           componentType: componentType,
           dataFromId: form.modelValue,
-          dataSource:form.dataSource,
+          dataSource: form.dataSource,
           queryInput: JSON.stringify({
             area_measure: form.selectMeasure,
             area_dim: form.selectDimension,
             second_dim: form.selectSecondDimension,
             filters: form.filterTags,
-            second_measure: form.selectScondMeasure,            
+            second_measure: form.selectScondMeasure,
             sortConfig: form.sortConfig ? form.sortConfig : null,
-            getDataWay: form.getDataWay ? form.getDataWay : '',
+            getDataWay: form.getDataWay ? form.getDataWay : "",
             sqlDatasourceId: form.sqlDatasourceId,
             sqlString: form.sqlString,
-            searchItems: form.searchItems
+            searchItems: form.searchItems,
           }),
         }).then((res) => {
           try {
@@ -509,7 +567,7 @@ export default {
                   getDataWay: form.getDataWay,
                   sqlDatasourceId: form.sqlDatasourceId,
                   sqlString: form.sqlString,
-                  searchItems: form.searchItems
+                  searchItems: form.searchItems,
                 });
               //单个组件更新数据不触发其他组件重绘
               this.$set(this.dashboardLayout, index, item);
@@ -532,7 +590,7 @@ export default {
     itemClick(item) {
       if (this.itemFocusId == item.i) return;
       // this.focusItem = null;
-      console.log('=======itemClick item:', item);
+      console.log("=======itemClick item:", item);
       this.focusItem = item;
       this.itemFocusId = item.i;
     },
@@ -604,10 +662,10 @@ export default {
           filters: [],
           second_measure: [],
           sortConfig: null,
-          getDataWay: '',
-          sqlDatasourceId: '',
-          sqlString: '',
-          searchItems: []
+          getDataWay: "",
+          sqlDatasourceId: "",
+          sqlString: "",
+          searchItems: [],
         },
         data: item.type == "tab" ? [] : {},
         tableShow: false,
@@ -628,15 +686,19 @@ export default {
     itemRefreshSubmit(params) {
       const sortConfig = params.sortConfig;
       const itemData = params.item;
-      const searchItems = params.searchItems;      
+      const searchItems = params.searchItems;
       let dashboardLayout = this.dashboardLayout;
       this.focusItem = itemData;
       dashboardLayout.map((item) => {
         if (item.i == itemData.i) {
           item.loading = true;
           this.itemClick(itemData);
-          item.queryInput.sortConfig = sortConfig ? sortConfig: item.queryInput.sortConfig;
-          item.queryInput.searchItems = searchItems ? searchItems: item.queryInput.searchItems;
+          item.queryInput.sortConfig = sortConfig
+            ? sortConfig
+            : item.queryInput.sortConfig;
+          item.queryInput.searchItems = searchItems
+            ? searchItems
+            : item.queryInput.searchItems;
 
           this.updateSubmit({
             filterTags: item.queryInput.filters,
@@ -646,22 +708,22 @@ export default {
             selectScondMeasure: item.queryInput.second_measure,
             selectMeasure: item.queryInput.area_measure,
             sortConfig: item.queryInput.sortConfig,
-            dataSource:item.dataSource,
+            dataSource: item.dataSource,
             getDataWay: item.queryInput.getDataWay,
             sqlDatasourceId: item.queryInput.sqlDatasourceId,
             sqlString: item.queryInput.sqlString,
-            searchItems: item.queryInput.searchItems
+            searchItems: item.queryInput.searchItems,
           });
         }
       });
-    },    
+    },
     refreshSubmit(params) {
-      let dateValue = params.dateValue
-      let dateRadio = params.dateRadio
+      let dateValue = params.dateValue;
+      let dateRadio = params.dateRadio;
 
       let dashboardLayout = JSON.parse(JSON.stringify(this.dashboardLayout));
       dashboardLayout.map((item, index) => {
-        if (item.type == "filter") {          
+        if (item.type == "filter") {
           item.queryInput.dateValue = dateValue;
           item.queryInput.dateRadio = dateRadio;
           this.$set(this.dashboardLayout, index, item);
@@ -677,7 +739,6 @@ export default {
               } else {
                 filters_item.conValue = dateValue.join(",");
               }
-              
             }
           });
           if (date_show) {
@@ -700,11 +761,11 @@ export default {
               selectSecondDimension: item.queryInput.second_dim,
               selectMeasure: item.queryInput.area_measure,
               selectScondMeasure: item.queryInput.second_measure,
-              dataSource:item.dataSource,
+              dataSource: item.dataSource,
               getDataWay: item.queryInput.getDataWay,
               sqlDatasourceId: item.queryInput.sqlDatasourceId,
               sqlString: item.queryInput.sqlString,
-              searchItems: item.queryInput.searchItems
+              searchItems: item.queryInput.searchItems,
             },
             item.type,
             item.i
@@ -726,15 +787,15 @@ export default {
         });
       }
       dashboardLayout.map((item) => {
-        if (item.type == "text") {          
+        if (item.type == "text") {
           item.text = this.$refs["item_" + item.i][0].newsContext;
         }
         //这里没有选模型且组件类型不为筛选控件的才可以插入
         if (
           item.dataFromId == "" &&
           item.type != "filter" &&
-          item.type != "text" && 
-          item.queryInput.getDataWay != 'sql'
+          item.type != "text" &&
+          item.queryInput.getDataWay != "sql"
         )
           return;
 
@@ -752,12 +813,12 @@ export default {
           }),
           query_input: JSON.stringify(item.queryInput),
           name: item.title,
-          data_source:item.dataSource
+          data_source: item.dataSource,
         });
       });
       let body = {
         id: identification,
-        parent_id: query.parent_id,                
+        parent_id: query.parent_id,
         status: 1,
         components: components,
       };
@@ -780,7 +841,7 @@ export default {
                   // window.location.reload();
                   localStorage.setItem("is_reload_page", 1);
                   that.$router.push(
-                    "/visual/dashboardMaking/"+res.data.identification
+                    "/visual/dashboardMaking/" + res.data.identification
                   );
                   that.init();
                 }
@@ -798,25 +859,25 @@ export default {
      * 切换视图
      */
     switchView(row) {
-      console.log(row)
+      console.log(row);
       //显示表格
       row.tableShow = !row.tableShow;
       //初始化表格字段
       let tableColumns = [];
 
-      if (row.queryInput.getDataWay == 'sql') {
+      if (row.queryInput.getDataWay == "sql") {
         //sql表格展示
-        if (typeof(row.metadata[0]) != 'undefined') {
+        if (typeof row.metadata[0] != "undefined") {
           for (let key in row.metadata[0]) {
-            let arr = {}
-            arr.label = key
-            arr.prop = key
-            tableColumns.push(arr)
+            let arr = {};
+            arr.label = key;
+            arr.prop = key;
+            tableColumns.push(arr);
           }
         }
       } else {
         //模型表格展示
-        let concatFields = []; //合并字段        
+        let concatFields = []; //合并字段
         concatFields = row.queryInput.area_dim.concat(
           row.queryInput.area_measure
         );
@@ -826,11 +887,10 @@ export default {
             label: item.column,
           });
         });
-        
       }
-      if(row.type != 'index') this.$refs["item_" + row.i][0].parentHandleclick(); //解决报表管理：新建报表，来回切换视图后，图表异常（所有报表）
+      if (row.type != "index")
+        this.$refs["item_" + row.i][0].parentHandleclick(); //解决报表管理：新建报表，来回切换视图后，图表异常（所有报表）
       row.tableColumns = tableColumns;
-      
     },
     /*
      * 导出数据
@@ -840,7 +900,7 @@ export default {
         downloadComponentData({
           componentType: item.type,
           dataFromId: item.dataFromId,
-          dataSource:item.dataSource,
+          dataSource: item.dataSource,
           queryInput: JSON.stringify({
             area_measure: item.queryInput.area_measure,
             area_dim: item.queryInput.area_dim,
@@ -851,7 +911,7 @@ export default {
             getDataWay: item.queryInput.getDataWay,
             sqlDatasourceId: item.queryInput.sqlDatasourceId,
             sqlString: item.queryInput.sqlString,
-            searchItems: item.queryInput.searchItems
+            searchItems: item.queryInput.searchItems,
           }),
         }).then((res) => {
           const link = document.createElement("a");
@@ -871,7 +931,6 @@ export default {
           item.loading = true;
           this.$set(this.dashboardLayout, index, item);
         }
-
       });
       this.updateSubmit(form);
     },
@@ -879,21 +938,20 @@ export default {
     /**
      * 点击刷新组件数据
      */
-    clickRefreshItem(item){      
-      this.$refs['item_'+item.i][0].searchSubmit();
-    }
+    clickRefreshItem(item) {
+      this.$refs["item_" + item.i][0].searchSubmit();
+    },
   },
 };
 </script>
 <style lang="scss" scoped>
-
 .container {
   background: #fff;
   padding: 0;
   .component-title {
     width: 200px;
     height: 28px;
-    margin-bottom: 12px;    
+    margin-bottom: 12px;
     padding-left: 0px;
   }
   .container-box {
@@ -913,9 +971,13 @@ export default {
     border: 1px solid #ebeef5;
     padding: 10px;
     width: 100%;
+    .clearfix {
+      display: inline-block;
+    }
     .header-btn {
+      float: right;
       flex: 1;
-      text-align: right;
+      text-align: right;      
     }
   }
 }
@@ -934,32 +996,27 @@ export default {
     overflow: hidden;
   }
 }
-.save-button{
+.save-button {
   margin-left: 10px;
 }
-.vue-draggable-handle{
-  // display:inline-block;  
-  position:absolute;
+.vue-draggable-handle {
+  // display:inline-block;
+  position: absolute;
   width: calc(100% - 4px);
   height: 24px;
-  top:2px;
-  left:2px;
-  right:2px;
-  z-index:9999;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  z-index: 9999;
   // background-color: #ebeef5;
 }
 .vue-draggable-handle:hover {
-  background-color:antiquewhite;
+  background-color: antiquewhite;
 }
-
 </style>
 <style scoped>
-.svg-icon{
+.svg-icon {
   width: 1em;
   height: 1em;
-}
-.el-input__inner {
-    height: 24px;
-    line-height: 24px;
 }
 </style>

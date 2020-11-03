@@ -155,4 +155,7 @@ export default {
 .el-picker-panel__shortcut{
   padding-left: 8px;
 }
+.el-range-editor.el-input__inner {
+  width: 210px;
+}
 </style>
