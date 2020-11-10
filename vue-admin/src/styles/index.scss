@@ -379,10 +379,10 @@ aside {
     }
   }
   .vue-grid-layout{
-    min-height: calc(100vh - 200px)!important;
+    min-height: calc(100vh - 100px)!important;
   }
   .el-card__body{
-    height: calc(100vh - 200px);
+    height: calc(100vh - 100px);
     overflow-x: auto;
     padding: 0;
   }

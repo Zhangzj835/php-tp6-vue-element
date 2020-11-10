@@ -12,11 +12,7 @@
             :content="item.name"
             placement="top-start"
           >
-            <el-button
-              size="small"
-              type="text"
-              @click="createComponents(item)"
-            >
+            <el-button size="small" type="text" @click="createComponents(item)">
               <div
                 class="com-icon"
                 :style="'background-image: url(' + item.img + ');'"
@@ -39,180 +35,199 @@
       </div>
     </div>
     <el-row :gutter="3">
-      <el-col
-        :span="
-          editPreviewShow == 'preview' || !dashboardLayout.length ? 24 : 18
-        "
-      >
-        <div class="container-box">
-          <el-card>
-            <div style="background: rgb(235, 234, 239)">
-              <grid-layout
-                :layout="dashboardLayout"
-                :col-num="12"
-                :row-height="30"
-                :is-draggable="true"
-                :is-resizable="true"
-                :vertical-compact="true"
-                :use-css-transforms="true"
-                @layout-created="layoutCreatedEvent"
-                @layout-before-mount="layoutBeforeMountEvent"
-                @layout-mounted="layoutMountedEvent"
-                @layout-ready="layoutReadyEvent"
-                @layout-updated="layoutUpdatedEvent"
-              >
-                <grid-item
-                  v-for="item in dashboardLayout"
-                  :x="item.x"
-                  :y="item.y"
-                  :w="item.w"
-                  :h="item.h"
-                  :i="item.i"
-                  :key="item.i"
-                  drag-allow-from=".vue-draggable-handle"
-                  drag-ignore-from=".no-drag"
-                  @resize="resizeEvent"
-                  @move="moveEvent"
-                  @resized="resizedEvent"
-                  @moved="movedEvent"
+      <div ref="viewFrame" style="display: block">
+        <el-col
+          :span="
+            editPreviewShow == 'preview' || !dashboardLayout.length ? 24 : 18
+          "
+          :style="
+            editPreviewShow == 'edit' && makingFrameWidth
+              ? { width: makingFrameWidth + 'px' }
+              : ''
+          "
+        >
+          <div
+            class="container-box"
+            ref="makingFrame"
+            style="display: inline-block; width: calc(100% - 2px)"
+          >
+            <el-card>
+              <div style="background: rgb(235, 234, 239)">
+                <grid-layout
+                  :layout="dashboardLayout"
+                  :col-num="12"
+                  :row-height="30"
+                  :is-draggable="true"
+                  :is-resizable="true"
+                  :vertical-compact="true"
+                  :use-css-transforms="true"
+                  @layout-created="layoutCreatedEvent"
+                  @layout-before-mount="layoutBeforeMountEvent"
+                  @layout-mounted="layoutMountedEvent"
+                  @layout-ready="layoutReadyEvent"
+                  @layout-updated="layoutUpdatedEvent"
                 >
-                  <div
-                    class="content"
-                    style="position: relative"
-                    @click="itemClick(item)"
+                  <grid-item
+                    v-for="item in dashboardLayout"
+                    :x="item.x"
+                    :y="item.y"
+                    :w="item.w"
+                    :h="item.h"
+                    :i="item.i"
+                    :key="item.i"
+                    drag-allow-from=".vue-draggable-handle"
+                    drag-ignore-from=".no-drag"
+                    @resize="resizeEvent"
+                    @move="moveEvent"
+                    @resized="resizedEvent"
+                    @moved="movedEvent"
                   >
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      content="拖拽移动"
-                      placement="top"
-                    >
-                      <div class="vue-draggable-handle"></div>
-                    </el-tooltip>
                     <div
-                      class="no-drag"
-                      :class="itemFocusId == item.i ? 'focus' : ''"
-                      :style="item.type == 'text' ? 'overflow-y: auto;' : ''"
+                      class="content"
+                      style="position: relative"
+                      @click="itemClick(item)"
                     >
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="拖拽移动"
+                        placement="top"
+                      >
+                        <div class="vue-draggable-handle"></div>
+                      </el-tooltip>
                       <div
-                        v-if="item.type != 'filter' && item.type != 'text'"
-                        class="chart-wrapper-title component-title"
+                        class="no-drag"
+                        :class="itemFocusId == item.i ? 'focus' : ''"
+                        :style="item.type == 'text' ? 'overflow-y: auto;' : ''"
                       >
-                        <el-input
-                          v-model="item.title"
-                          placeholder="请输入图表标题"
-                          size="mini"
-                        ></el-input>
-                      </div>
-
-                      <!-- 可视化视图 -->
-                      <component-item
-                        v-loading="
-                          item.loading &&
-                          item.type != 'filter' &&
-                          item.type != 'text'
-                            ? item.loading
-                            : false
-                        "
-                        v-show="!item.tableShow"
-                        :ref="'item_' + item.i"
-                        :componentData="item"
-                        @refreshSubmit="refreshSubmit"
-                        @itemRefreshSubmit="itemRefreshSubmit"
-                      />
-                      <!-- 表格视图 -->
-                      <el-table
-                        border
-                        v-if="item.type != 'tab' && item.tableShow"
-                        :data="item.metadata"
-                        style="width: 100%"
-                        height="100%"
-                      >
-                        <el-table-column
-                          v-for="(iField, idx) in item.tableColumns"
-                          :key="idx"
-                          :prop="iField.prop"
-                          :label="iField.label"
+                        <div
+                          v-if="item.type != 'filter' && item.type != 'text'"
+                          class="chart-wrapper-title component-title"
                         >
-                          <template slot-scope="scope">
-                            <span>{{ scope.row[iField.prop] }}</span>
-                          </template>
-                        </el-table-column>
-                      </el-table>
-                      <br />
+                          <el-input
+                            v-model="item.title"
+                            placeholder="请输入图表标题"
+                            size="mini"
+                          ></el-input>
+                        </div>
 
-                      <div
-                        style="
-                          position: absolute;
-                          right: 10px;
-                          top: 5px;
-                          z-index: 9999;
-                        "
-                      >
-                        <el-tooltip
-                          v-if="item.queryInput.getDataWay == 'sql'"
-                          class="item"
-                          effect="dark"
-                          content="刷新数据"
-                          placement="top-start"
+                        <!-- 可视化视图 -->
+                        <component-item
+                          v-loading="
+                            item.loading &&
+                            item.type != 'filter' &&
+                            item.type != 'text'
+                              ? item.loading
+                              : false
+                          "
+                          v-show="!item.tableShow"
+                          :ref="'item_' + item.i"
+                          :componentData="item"
+                          @refreshSubmit="refreshSubmit"
+                          @itemRefreshSubmit="itemRefreshSubmit"
+                        />
+                        <!-- 表格视图 -->
+                        <el-table
+                          border
+                          v-if="item.type != 'tab' && item.tableShow"
+                          :data="item.metadata"
+                          style="width: 100%"
+                          height="100%"
                         >
-                          <svg-icon
-                            icon-class="caret-right"
-                            @click="clickRefreshItem(item)"
-                          />
-                        </el-tooltip>
-
-                        <el-dropdown>
-                          <span class="el-dropdown-link">
-                            <i
-                              class="cp-gesture el-icon-more el-icon--right fs-20"
-                            ></i>
-                          </span>
-                          <el-dropdown-menu
-                            slot="dropdown"
-                            v-if="item.type == 'filter'"
+                          <el-table-column
+                            v-for="(iField, idx) in item.tableColumns"
+                            :key="idx"
+                            :prop="iField.prop"
+                            :label="iField.label"
                           >
-                            <el-dropdown-item>
-                              <div @click="delItem(item)">删除组件</div>
-                            </el-dropdown-item>
-                          </el-dropdown-menu>
-                          <el-dropdown-menu slot="dropdown" v-else>
-                            <el-dropdown-item>
-                              <div @click="delItem(item)">删除组件</div>
-                            </el-dropdown-item>
-                            <el-dropdown-item v-show="item.type != 'text'">
-                              <div @click="downloadData(item)">导出数据</div>
-                            </el-dropdown-item>
-                            <el-dropdown-item
-                              v-show="item.type != 'tab' && item.type != 'text'"
+                            <template slot-scope="scope">
+                              <span>{{ scope.row[iField.prop] }}</span>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                        <br />
+
+                        <div
+                          style="
+                            position: absolute;
+                            right: 10px;
+                            top: 5px;
+                            z-index: 9999;
+                          "
+                        >
+                          <el-tooltip
+                            v-if="item.queryInput.getDataWay == 'sql'"
+                            class="item"
+                            effect="dark"
+                            content="刷新数据"
+                            placement="top-start"
+                          >
+                            <svg-icon
+                              icon-class="caret-right"
+                              @click="clickRefreshItem(item)"
+                            />
+                          </el-tooltip>
+
+                          <el-dropdown>
+                            <span class="el-dropdown-link">
+                              <i
+                                class="cp-gesture el-icon-more el-icon--right fs-20"
+                              ></i>
+                            </span>
+                            <el-dropdown-menu
+                              slot="dropdown"
+                              v-if="item.type == 'filter'"
                             >
-                              <div @click="switchView(item)">切换视图</div>
-                            </el-dropdown-item>
-                          </el-dropdown-menu>
-                        </el-dropdown>
+                              <el-dropdown-item>
+                                <div @click="delItem(item)">删除组件</div>
+                              </el-dropdown-item>
+                            </el-dropdown-menu>
+                            <el-dropdown-menu slot="dropdown" v-else>
+                              <el-dropdown-item>
+                                <div @click="delItem(item)">删除组件</div>
+                              </el-dropdown-item>
+                              <el-dropdown-item v-show="item.type != 'text'">
+                                <div @click="downloadData(item)">导出数据</div>
+                              </el-dropdown-item>
+                              <el-dropdown-item
+                                v-show="
+                                  item.type != 'tab' && item.type != 'text'
+                                "
+                              >
+                                <div @click="switchView(item)">切换视图</div>
+                              </el-dropdown-item>
+                            </el-dropdown-menu>
+                          </el-dropdown>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </grid-item>
-              </grid-layout>
-            </div>
-          </el-card>
-        </div>
-      </el-col>
-
-      <el-col
-        :span="6"
-        v-if="editPreviewShow == 'edit' && dashboardLayout.length"
-      >
-        <div class="container-box">
-          <sidebarConfig
-            v-if="focusItem !== null"
-            :itemConfig="focusItem"
-            @updateSubmit="updateSubmit"
-            @componentUpdate="componentUpdate"
+                  </grid-item>
+                </grid-layout>
+              </div>
+            </el-card>
+          </div>
+          <XHandle
+            class="myxhandle"
+            @widthChange="widthChange"
+            :height="makingFrameHeight"
           />
-        </div>
-      </el-col>
+        </el-col>
+
+        <el-col
+          :span="6"
+          v-if="editPreviewShow == 'edit' && dashboardLayout.length"
+          :style="sidebarFrameWidth ? { width: sidebarFrameWidth + 'px' } : ''"
+        >
+          <div class="container-box" ref="sidebarFrame">
+            <sidebarConfig
+              v-if="focusItem !== null"
+              :itemConfig="focusItem"
+              @updateSubmit="updateSubmit"
+              @componentUpdate="componentUpdate"
+            />
+          </div>
+        </el-col>
+      </div>
     </el-row>
   </div>
 </template>
@@ -222,6 +237,7 @@ import sidebarConfig from "./components/sidebarConfig";
 import componentItem from "./components/componentItem";
 import Pagination from "@/components/pagination";
 import DateQuick from "@/components/DateQuickBtn";
+import XHandle from "./components/xhandle";
 import { userTabColumn, operatorSymbol, revenueTabColumn } from "./config";
 import {
   getNowDay,
@@ -354,6 +370,14 @@ export default {
       dashboardLayout: [],
       //表格变量参数
       variables: [],
+
+      //主视图和右侧菜单的宽度
+      viewFrameWidth: 0,
+      makingFrameWidth: 0,
+      makingFrameWidthDefault: 0,
+      makingFrameHeight: 0,
+      sidebarFrameWidth: 0,
+      sidebarFrameWidthDefault: 0,
     };
   },
   components: {
@@ -363,6 +387,7 @@ export default {
     DateQuick,
     componentItem,
     sidebarConfig,
+    XHandle,
   },
   watch: {
     fieldTags() {
@@ -380,10 +405,35 @@ export default {
       //字段有改动的时候，tab表格重新渲染
       this.fieldTagsChange = true;
     },
+
+    pageInfo() {
+      //计算工作台和右侧菜单宽度
+      this.$nextTick(function () {
+        let viewFrameWidth = this.$refs.viewFrame.clientWidth - 8; //俺也不知道为哈这里多出8px
+        let makingFrameWidth = this.$refs.makingFrame.clientWidth;
+        let sidebarFrameWidth = viewFrameWidth - makingFrameWidth;
+        this.viewFrameWidth = viewFrameWidth;
+        this.makingFrameHeight = this.$refs.makingFrame.clientHeight;
+        this.makingFrameWidth = makingFrameWidth;
+        this.makingFrameWidthDefault = makingFrameWidth;
+        this.sidebarFrameWidth = sidebarFrameWidth;
+        this.sidebarFrameWidthDefault = sidebarFrameWidth;
+      });
+    },
   },
   mounted() {
     window.onbeforeunload = true;
     this.init();
+
+    //监听窗口的大小变化
+    window.onresize = () => {
+      return (() => {
+        let temp = this.viewFrameWidth;
+        this.viewFrameWidth = this.$refs.viewFrame.clientWidth;
+        this.makingFrameHeight = this.$refs.makingFrame.clientHeight;
+        this.makingFrameWidth += this.viewFrameWidth - temp;
+      })();
+    };
   },
   methods: {
     async init() {
@@ -941,6 +991,16 @@ export default {
     clickRefreshItem(item) {
       this.$refs["item_" + item.i][0].searchSubmit();
     },
+
+    /**
+     * 调整主视图和右侧编辑菜单的宽度
+     */
+    widthChange(movement) {
+      let makingFrameWidth = this.$refs.makingFrame.clientWidth;
+      let sidebarFrameWidth = this.$refs.sidebarFrame.clientWidth;
+      this.makingFrameWidth -= movement;
+      this.sidebarFrameWidth += movement;
+    },
   },
 };
 </script>
@@ -977,7 +1037,7 @@ export default {
     .header-btn {
       float: right;
       flex: 1;
-      text-align: right;      
+      text-align: right;
     }
   }
 }
